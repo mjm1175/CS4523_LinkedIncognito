@@ -208,6 +208,12 @@ nav {
     
 }
 
+#post-link {
+    text-decoration: none;
+    color: #f218c3;
+    font-size: 12px;
+}
+
 /* Login/Sign-Up Page */
 
 .box {
