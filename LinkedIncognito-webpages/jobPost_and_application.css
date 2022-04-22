@@ -208,6 +208,12 @@ nav {
     
 }
 
+#post-link {
+    text-decoration: none;
+    color: #f218c3;
+    font-size: 12px;
+}
+
 h1 {
     margin-top: 0;
     margin-bottom: 20px;
@@ -216,7 +222,7 @@ h1 {
     color: #626262;
 }
 
-.job-post {
+.job-post, .job-app {
     border-radius: 30px;
     background: var(--bg-color);
     color: #626262;
@@ -240,4 +246,12 @@ h1 {
     display: flex;
     justify-content: space-around;
     margin-bottom: 25px;
+}
+
+.job-app {
+    width: 60%
+}
+
+.form-group {
+    margin-bottom: 20px;
 }

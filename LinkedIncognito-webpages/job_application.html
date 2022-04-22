@@ -76,30 +76,42 @@
         </div>
     </nav>
 
-    <div class="job-post">
-        <h1 id="position">Job Title</h1>
-        <div class="heading-info">
-            <div id="location">Location: </div>
-            <div id="hours">Full-Time / Part-Time</div>
-            <div id="date">Date Posted: </div>
-        </div>
-        <h3>Job Description:</h3>
-        <p id = "description">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore 
-            et dolore magna aliqua. Id nibh tortor id aliquet lectus proin nibh nisl condimentum. Tincidunt
-            tortor aliquam nulla facilisi cras fermentum odio eu feugiat. Sed risus ultricies tristique nulla 
-            aliquet enim. Tortor posuere ac ut consequat semper viverra nam libero justo. Massa sed elementum 
-            tempus egestas sed sed. Sed egestas egestas fringilla phasellus faucibus scelerisque eleifend donec 
-            pretium. Dapibus ultrices in iaculis nunc sed augue lacus viverra vitae. Varius sit amet mattis vulputate 
-            enim nulla aliquet porttitor lacus. Nulla aliquet enim tortor at auctor. A iaculis at erat pellentesque 
-            adipiscing commodo elit. Nunc mi ipsum faucibus vitae aliquet. Duis ut diam quam nulla porttitor massa. 
-            Hendrerit dolor magna eget est lorem ipsum dolor. Mollis nunc sed id semper risus. Nec feugiat in fermentum 
-            posuere urna nec. Nullam vehicula ipsum a arcu cursus. Tortor aliquam nulla facilisi cras fermentum odio eu. 
-            A iaculis at erat pellentesque adipiscing. Viverra vitae congue eu consequat ac.
-        </p>
+    <div class="job-app">
+        <br>
+        <h1>Apply Here!</h1>
+        <form accept-charset="UTF-8">
+          <label for="inputAddress">Address: </label>
+          <div class="form-group">
+            <input type="text" name="address" class="form-control" id="inputAddress" placeholder="1234 Main St">
+          </div>
+          <div class="form-row">
+            <label for="inputCity">City: </label>
+            <div class="form-group col-md-6">
+              <input type="text" name="city" class="form-control" id="inputCity">
+            </div>
+            <label for="inputZip">Zip: </label>
+            <div class="form-group col-md-2">
+              <input type="text" name="zip" class="form-control" id="inputZip">
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="example-date-input" class="col-3 col-form-label">Start Date: </label>
+            <div class="col-10">
+              <input class="form-control" name="starting_date" type="date" value="2022-02-01" id="example-date-input">
+            </div>
+          </div>
+          <div class="form-group mt-3">
+            <label class="mr-4">Upload your Resume: </label>
+            <input type="file" name="file">
+          </div>
+          <div class="form-group mt-3">
+            <label class="mr-4">Upload your Cover Letter(if required): </label>
+            <input type="file" name="file">
+          </div>
 
-        <a href = "job_application.html">Apply Now!</a>
-    </div>
+          <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+      </div>
 
     <script src="script.js"></script>
 </body>
