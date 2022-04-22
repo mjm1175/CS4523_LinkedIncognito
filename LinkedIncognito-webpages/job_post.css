@@ -208,10 +208,6 @@ nav {
     
 }
 
-input, textarea { 
-    outline: none;
-}
-   
 h1 {
     margin-top: 0;
     margin-bottom: 20px;
@@ -219,62 +215,29 @@ h1 {
     text-align: center;
     color: #626262;
 }
-    
-form {  
+
+.job-post {
     border-radius: 30px;
     background: var(--bg-color);
-}
-
-.posting{
+    color: #626262;
     display: flex;
     justify-content: center;
-    align-items: center;
+    flex-direction: column;
     padding: 20px; 
-}
-
-
-.form-inner {
-    padding: 40px;
- }
-   
-.form-inner input,
-.form-inner textarea {
-    display: block;
-    width: 100%;
-    padding: 15px;
-    margin-bottom: 10px;
-    border: none;
-    border-radius: 20px;
-    background: #d0dfe8;
-}
-
-.form-inner textarea {
-    resize: none;
-}
-
-button {
-    width: 100%;
-    padding: 10px;
-    margin-top: 20px;
-    border-radius: 20px;
-    border: none;
-    border-bottom: 4px solid #5b3451;
-    background: #8e537f; 
-    font-size: 16px;
-    font-weight: 400;
-    color: #fff;
-}
-
-button:hover {
-    background: #5b3451;
-} 
-   
-@media (min-width: 568px) {
-    form {
     width: 60%;
-    }
+    margin:auto;
+    margin-top: 20px;
 }
 
+.job-post a {
+    text-decoration: none;
+    color: #f218c3;
+    margin-top: 20px;
+    text-align: center;
+}
 
-
-
+.heading-info {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 25px;
+}

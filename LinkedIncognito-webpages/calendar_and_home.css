@@ -323,6 +323,26 @@ nav{
     font-size: 15px;
 }
 
+.job-preview {
+    display: flex;
+    margin-bottom: 10px;
+    
+}
+
+.job-preview-elem {
+    border-style: solid;
+    border-color: var(--light-accent);
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-right: 10px;
+    border-radius: 10px;
+    background-color: var(--light-accent);
+}
+
+.viewMore {
+    text-decoration: none;
+    color: #f218c3;
+}
 
 /* CALENDAR */
 ul {list-style-type: none;}
