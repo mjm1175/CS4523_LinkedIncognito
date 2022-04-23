@@ -1,3 +1,5 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -106,7 +108,38 @@
                 </div>
             </div>
 
+            <!-- Populating from database information -->
+
+            <!-- This means we must send variable 'jobs' from backend -->
+            {% for job in jobs %}
+
             <div class="post-container">
+                <div class="user-profile">
+                    <a href="companyprofile.html"><img src="{{job.logo.url}}"></a>
+                    <div>
+                        <p>{{job.company}}</p>
+                        <span>April 10 2022, 11:21PM</span>
+                    </div>
+                </div>
+                <p class="post-text">{{job.title}}</p>
+                <div class="job-preview">
+                    <div class="job-preview-elem">
+                        <p>{{job.location}}</p>
+                    </div>
+                    <div class="job-preview-elem">
+                        <P>{{job.type}}</P>
+                    </div>
+                    <!-- Could add experience, salary, etc. -->
+                </div>
+                <p>{{job.summary}}</p>
+                <br>
+                <a href="job_post.html" class="viewMore">View More</a>
+                
+            </div>
+            {% endfor %}
+
+            <!--Commenting out hardcoded ones-->
+            <!--<div class="post-container">
                 <div class="user-profile">
                     <a href="companyprofile.html"><img src="{% static 'app/images/profile.jpg' %}"></a>
                     <div>
@@ -129,7 +162,6 @@
                 <a href="job_post.html" class="viewMore">View More</a>
                 
             </div>
-
             <div class="post-container">
                 <div class="user-profile">
                     <a href="companyprofile.html"><img src="{% static 'app/images/profile.jpg' %}"></a>
@@ -151,7 +183,7 @@
                     interdum, nisi lorem egestas vitae scel.</p>
                 <br>
                 <a href="job_post.html" class="viewMore">View More</a>
-            </div>
+            </div>-->
         </div>
 
         <!--------------RIGHT SIDEBAR--------------->
