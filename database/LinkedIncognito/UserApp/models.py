@@ -4,27 +4,27 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 
 # Create your models here.
-class Applicants(models.Model):
-    Username = models.AutoField(primary_key=True)
-    Password = models.CharField(max_length=100)
-    Email = models.CharField(max_length=50)
-    FirstName = models.CharField(max_length=25)
-    LastName = models.CharField(max_length=25)
-    Degree = models.CharField(max_length=30)
+#class Applicants(models.Model):
+#    Username = models.AutoField(primary_key=True)
+#    Password = models.CharField(max_length=100)
+#    Email = models.CharField(max_length=50)
+#    FirstName = models.CharField(max_length=25)
+#    LastName = models.CharField(max_length=25)
+#    Degree = models.CharField(max_length=30)
 
-class Employers(models.Model):
-    Username = models.AutoField(primary_key=True)
-    Password = models.CharField(max_length=100)
-    Email = models.CharField(max_length=50)
-    FirstName = models.CharField(max_length=25)
-    LastName = models.CharField(max_length=25)
-    CompanyName = models.CharField(max_length=50)
-    ImplicitBiasFile = models.CharField(max_length=500)
+#class Employers(models.Model):
+#    Username = models.AutoField(primary_key=True)
+#    Password = models.CharField(max_length=100)
+#    Email = models.CharField(max_length=50)
+#    FirstName = models.CharField(max_length=25)
+#    LastName = models.CharField(max_length=25)
+#    CompanyName = models.CharField(max_length=50)
+#    ImplicitBiasFile = models.CharField(max_length=500)
 
-class JobPosting(models.Model):
-    Title = models.AutoField(primary_key=True)
-    JobType = models.CharField(max_length=20)
-    Description = models.CharField(max_length=1000)
+#class JobPosting(models.Model):
+#    Title = models.AutoField(primary_key=True)
+#    JobType = models.CharField(max_length=20)
+#    Description = models.CharField(max_length=1000)
 
 # class Interview(models.Model):
 #     Employer = models.ForeignKey(Employers.Username)
@@ -76,3 +76,11 @@ class Job(models.Model):
 
     def __str__(self):
         return '{} looking for {}'.format(self.company, self.title)
+
+
+# Create your models here.
+class Applicants(User):
+    Degree = models.CharField(max_length=30)
+
+class Employers(User):
+    ImplicitBiasFile = models.CharField(max_length=500)
