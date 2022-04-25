@@ -226,8 +226,8 @@ class Resume(models.Model):
     ]
 
     IMAGES = [
-        'profile1.jpg', 'profile2.jpg', 'profile3.jpg', 'profile4.jpg', 'profile5.jpg', 
-        'profile6.jpg', 'profile7.jpg', 'profile8.jpg', 'profile9.jpg', 'profile10.jpg', 
+        'profile-pic1.jpg', 'profile-pic2.jpg', 'profile-pic3.jpg', 'profile-pic4.jpg', 'profile-pic5.jpg', 
+        'profile-pic6.jpg', 'profile-pic7.jpg', 'profile-pic8.jpg', 'profile-pic9.jpg', 'profile-pic10.jpg', 
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -270,5 +270,21 @@ class Resume(models.Model):
 
         # keep track of everytime someone updates the resume, every time instance is saved this should update
         self.last_updated = timezone.now
+
         super(Resume, self).save(*args, **kwargs)
+    
+
+class Education(models.Model):
+
+class Experience(models.Model):
+    company = models.CharField(null=True)
+    position = models.CharField(null=True)
+    start_date = models.DateField()
+    end_date = models.DateField()
+    experience = models.TextField()
+    skills = models.TextField()
+    resume = models.ForeignKey(Resume, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return '{} at {}'.format(self.position, self.company)
     
