@@ -1,10 +1,12 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Profile Page - LinkedIncognito - Profile</title>
+        <title>Profile - LinkedIncognito</title>
         <link rel="stylesheet" href="{% static 'app/css/profile.css' %}">
     </head>
     <body>
@@ -13,11 +15,13 @@
             <!--Top Bar-->
             <div class="nav-left">
                 <!---Corner Logo-->
-                <a href="home.html"> <img src="{% static 'app/images/Linkedin-Logo.png' %}" class="logo"></a>
+                <a href="{% url 'home_page' %}"> <img src="{% static 'app/images/Linkedin-Logo.png' %}" class="logo"></a>
                 <!--Icons-->
                 <ul>
                     <li><img src="{% static 'app/images/notification.png' %}"></li>
+                    <!--LINK TO MESSENGER PAGE-->
                     <li> <a href="messenger.html"> <img src="{% static 'app/images/inbox.png' %}"></a> </li>
+                    <!--LINK TO CALENDAR PAGE-->
                     <li><a href="calendar.html"><img src="{% static 'app/images/calendar.png' %}"></a></li>                                    
                 </ul>
             </div>
@@ -28,6 +32,7 @@
                 </div>
 
                 <div class="nav-user-icon online" onclick="settingsMenuToggle()">
+                    <!--make this update to real profile pic-->
                     <img src="{% static 'app/images/profile-pic.png' %}">
                 </div>
             </div>
@@ -43,8 +48,8 @@
                     <div class="user-profile">
                         <img src="{% static 'app/images/profile-pic.png' %}">
                         <div>
-                            <p>John Nicholson</p>
-                            <a href="profile.html">See your profile</a>
+                            <p>{{user.first_name}} {{user.last_name}}</p>
+                            <a href="{% url 'profile' %}">See your profile</a>
                         </div>
                     </div>   
                     <hr>
@@ -75,7 +80,7 @@
                     <!-- Entry 6-->
                     <div class="setting-links">
                         <img src="{% static 'app/images/logout.png' %}" class="settings-icon">
-                        <a href="#">Logout <img src="{% static 'app/images/arrow.png' %}" width="10px"></a>
+                        <a href="{% url 'login' %}">Logout <img src="{% static 'app/images/arrow.png' %}" width="10px"></a>
                     </div>                                                              
                 </div>
             </div>
@@ -92,12 +97,12 @@
                     <div class="pd-row">
                         <img src="{% static 'app/images/profile-pic.png' %}" class="pd-image">
                         <div>
-                            <h3>Jack Nicholson</h3>
-                            <p>120 Friends - 20 mutual</p>
-                            <img src="{% static 'app/images/member-1.png' %}">
+                            <h3>{{user.first_name}} {{user.last_name}}</h3>
+                            <p>Contact: {{user.email}}</p>
+                            <!--<img src="{% static 'app/images/member-1.png' %}">
                             <img src="{% static 'app/images/member-2.png' %}">                        
                             <img src="{% static 'app/images/member-3.png' %}">
-                            <img src="{% static 'app/images/member-4.png' %}">
+                            <img src="{% static 'app/images/member-4.png' %}">-->
                         </div>
                     </div>
                 </div>
@@ -106,7 +111,7 @@
                     <button type="button"> <img src="{% static 'app/images/add-friends.png' %}"> Friend</button>
                     <button type="button"> <img src="{% static 'app/images/message.png' %}"> Message</button>
                     <br>
-                    <a href="#"><img src="{% static 'app/images/more.png' %}"></a>
+                    <a href="#"><img src="{% static 'app/images/setting2.png' %}"></a>
                 </div>
             </div>
 
@@ -126,7 +131,7 @@
                         </ul>
                     </div>
 
-                    <!--Photos grid-->
+                    <!--Photos grid
                     <div class="profile-intro">
                         <div class="title-box">
                             <h3>Photos</h3>
@@ -177,17 +182,17 @@
                                 <p>James D</p>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                 </div>
 
                 <div class="post-col">
-                    <!--New Post-->
+                    <!--New Post
                     <div class="write-post-container">
                         <div class="user-profile">
                             <img src="{% static 'app/images/profile-pic.png' %}">
                             <div>
-                                <p>John Nicholson</p>
-                                <small>Public</small>
+                                <p>{{user.first_name}} {{user.last_name}}</p>
+                                <small>@{{user.username}}</small>
                             </div>
                         </div>
     
@@ -199,13 +204,13 @@
                                 <a href="#"><img src="{% static 'app/images/feeling.png' %}">Feeling/Activity</a>
                             </div>
                         </div>
-                    </div>
+                    </div>-->
                         <!--Post 1-->
                     <div class="post-container">
                         <div class="user-profile">
                             <img src="{% static 'app/images/profile-pic.png' %}">
                             <div>
-                                <p>John Nicholson</p>
+                                <p>{{user.first_name}} {{user.last_name}}</p>
                                 <span>June 24 2022, 13:40 pm</span>
                             </div>
                         </div>     
@@ -228,11 +233,11 @@
                         <div class="user-profile">
                             <img src="{% static 'app/images/profile-pic.png' %}">
                             <div>
-                                <p>John Nicholson</p>
+                                <p>{{user.first_name}} {{user.last_name}}</p>
                                 <span>June 24 2022, 13:40 pm</span>
                             </div>
                         </div>     
-                        <p class="post-text">Like and share this videow tih friends, tag <span>@Easy Tutorials </span> facebook page on your post. Ask your doubts in the comments. <a href="#">#EasyTutorials </a><a href="#">#YouTubeChannel</a></p>               
+                        <p class="post-text">Like and share this video with friends, tag <span>@Easy Tutorials </span> facebook page on your post. Ask your doubts in the comments. <a href="#">#EasyTutorials </a><a href="#">#YouTubeChannel</a></p>               
                         <img src="{% static 'app/images/feed-image-2.png' %}" class="post-img">
 
                         <div class="post-row">
@@ -251,7 +256,7 @@
                         <div class="user-profile">
                             <img src="{% static 'app/images/profile-pic.png' %}">
                             <div>
-                                <p>John Nicholson</p>
+                                <p>{{user.first_name}} {{user.last_name}}</p>
                                 <span>June 24 2022, 13:40 pm</span>
                             </div>
                         </div>     
@@ -274,7 +279,7 @@
                         <div class="user-profile">
                             <img src="{% static 'app/images/profile-pic.png' %}">
                             <div>
-                                <p>John Nicholson</p>
+                                <p>{{user.first_name}} {{user.last_name}}</p>
                                 <span>June 24 2022, 13:40 pm</span>
                             </div>
                         </div>     
@@ -297,7 +302,7 @@
                         <div class="user-profile">
                             <img src="{% static 'app/images/profile-pic.png' %}">
                             <div>
-                                <p>John Nicholson</p>
+                                <p>{{user.first_name}} {{user.last_name}}</p>
                                 <span>June 24 2022, 13:40 pm</span>
                             </div>
                         </div>     

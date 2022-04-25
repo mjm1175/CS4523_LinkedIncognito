@@ -78,9 +78,194 @@ class Job(models.Model):
         return '{} looking for {}'.format(self.company, self.title)
 
 
-# Create your models here.
+# Currently unused, TRYING to get them to inherit from user class and be created upon registration but no luck so far
 class Applicants(User):
     Degree = models.CharField(max_length=30)
 
 class Employers(User):
     ImplicitBiasFile = models.CharField(max_length=500)
+
+#from django.db import models
+from django.template.defaultfilters import slugify
+#from django.contrib.auth.models import User
+#from django.utils import timezone
+from uuid import uuid4
+import random
+
+class Resume(models.Model):
+    # seems like we wont be using these LMFAO
+    MALE = 'Male'
+    FEMALE = 'Female'
+    NONBINARY = 'Nonbinary'
+    OTHER = 'Other'
+    MARRIED = 'Married'
+    SINGLE = 'Single'
+    WIDOWED = 'Widowed'
+    DIVORCED = 'Divorced'
+
+    AK	= 'Alaska'
+    AL	= 'Alabama'
+    AR	= 'Arkansas'
+    AZ	= 'Arizona'
+    CA	= 'California'
+    CO	= 'Colorado'
+    CT	= 'Connecticut'
+    DC	= 'District of Columbia'
+    DE	= 'Delaware'
+    FL	= 'Florida'
+    GA	= 'Georgia'
+    HI	= 'Hawaii'
+    IA	= 'Iowa'
+    ID	= 'Idaho'
+    IL	= 'Illinois'
+    IN	= 'Indiana'
+    KS	= 'Kansas'
+    KY	= 'Kentucky'
+    LA	= 'Louisiana'
+    MA	= 'Massachusetts'
+    MD	= 'Maryland'
+    ME	= 'Maine'
+    MI	= 'Michigan'
+    MN	= 'Minnesota'
+    MO	= 'Missouri'
+    MS	= 'Mississippi'
+    MT	= 'Montana'
+    NC	= 'North Carolina'
+    ND	= 'North Dakota'
+    NE	= 'Nebraska'
+    NH	= 'New Hampshire'
+    NJ	= 'New Jersey'
+    NM	= 'New Mexico'
+    NV	= 'Nevada'
+    NY	= 'New York'
+    OH	= 'Ohio'
+    OK	= 'Oklahoma'
+    OR	= 'Oregon'
+    PA	= 'Pennsylvania'
+    PR	= 'Puerto Rico'
+    RI	= 'Rhode Island'
+    SC	= 'South Carolina'
+    SD	= 'South Dakota'
+    TN	= 'Tennessee'
+    TX	= 'Texas'
+    UT	= 'Utah'
+    VA	= 'Virginia'
+    VT	= 'Vermont'
+    WA	= 'Washington'
+    WI	= 'Wisconsin'
+    WV	= 'West Virginia'
+    WY = 'Wyoming'
+
+    SEX_CHOICES = [
+        (MALE, 'Male'),
+        (FEMALE, 'Female'),
+        (NONBINARY, 'Nonbinary'),
+        (OTHER, 'Other'),
+    ]
+
+    MARITAL_CHOICES = [
+        (MARRIED, 'Married'),
+        (SINGLE, 'Single'),
+        (WIDOWED, 'Widowed'),
+        (DIVORCED, 'Divorced'),
+    ]
+
+    STATE_CHOICES = [
+        (AK,'Alaska'),
+        (AL,'Alabama'),
+        (AR,'Arkansas'),
+        (AZ,'Arizona'),
+        (CA,'California'),
+        (CO,'Colorado'),
+        (CT,'Connecticut'),
+        (DC,'District of Columbia'),
+        (DE,'Delaware'),
+        (FL,'Florida'),
+        (GA,'Georgia'),
+        (HI,'Hawaii'),
+        (IA,'Iowa'),
+        (ID,'Idaho'),
+        (IL,'Illinois'),
+        (IN,'Indiana'),
+        (KS,'Kansas'),
+        (KY,'Kentucky'),
+        (LA,'Louisiana'),
+        (MA,'Massachusetts'),
+        (MD,'Maryland'),
+        (ME,'Maine'),
+        (MI,'Michigan'),
+        (MN,'Minnesota'),
+        (MO,'Missouri'),
+        (MS,'Mississippi'),
+        (MT,'Montana'),
+        (NC,'North Carolina'),
+        (ND,'North Dakota'),
+        (NE,'Nebraska'),
+        (NH,'New Hampshire'),
+        (NJ,'New Jersey'),
+        (NM,'New Mexico'),
+        (NV,'Nevada'),
+        (NY,'New York'),
+        (OH,'Ohio'),
+        (OK,'Oklahoma'),
+        (OR,'Oregon'),
+        (PA,'Pennsylvania'),
+        (PR,'Puerto Rico'),
+        (RI,'Rhode Island'),
+        (SC,'South Carolina'),
+        (SD,'South Dakota'),
+        (TN,'Tennessee'),
+        (TX,'Texas'),
+        (UT,'Utah'),
+        (VA,'Virginia'),
+        (VT,'Vermont'),
+        (WA,'Washington'),
+        (WI,'Wisconsin'),
+        (WV,'West Virginia'),
+        (WY,'Wyoming'),
+    ]
+
+    IMAGES = [
+        'profile1.jpg', 'profile2.jpg', 'profile3.jpg', 'profile4.jpg', 'profile5.jpg', 
+        'profile6.jpg', 'profile7.jpg', 'profile8.jpg', 'profile9.jpg', 'profile10.jpg', 
+    ]
+
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    uniqueId = models.CharField(null=True)
+    # maybe remove upload_to??
+    image = models.ImageField(default='default.png', upload_to='profile_images')
+    email_confirmed = models.BooleanField(default=False)
+    # rm?
+    date_birth = models.DateField()
+    # rm?
+    sex = models.CharField(choices=SEX_CHOICES, default=OTHER)
+    marital_status = models.CharField(choices=MARITAL_CHOICES, default=SINGLE)
+    address_line1 = models.CharField(null=True)
+    address_line2 = models.CharField(null=True)
+    city = models.CharField(null=True)
+    state = models.CharField(choices=STATE_CHOICES, default=NY)
+    phone_number = models.CharField(null=True)
+    slug = models.SlugField(max_length=300, unique=True, blank=True, null=True)
+    date_created = models.DateTimeField(default=timezone.now)
+    last_updated = models.DateTimeField()
+    cover_letter = models.FileField(upload_to='resumes')
+    cv = models.FileField(upload_to='resumes')
+
+    def __str__(self):
+        return '{} {} {}'.format(self.user.first_name, self.user.last_name, self.uniqueId)
+
+    def get_absolute_url(self):
+        return reverse('resume-detail', kwargs={'slug': self.slug})
+    
+    def save(self, *args, **kwargs):
+        # Creating SlugField for the URL - to detailed page
+        if self.slug is None:
+            self.slug = slugify('{} {} {}'.format(self.user.first_name, self.user.last_name, self.user.uniqueId))
+
+        # Creating a unique Identifier for the resume (useful for other things in the future)
+        if self.uniqueId is None:
+            self.uniqueId = 'user-'+str(uuid4()).split('-')[4]
+
+        # assign a default profile image
+        
+    

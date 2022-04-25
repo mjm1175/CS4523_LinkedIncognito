@@ -54,13 +54,13 @@
         </form>
 
         <form id ="register" method="POST" class ="input-group">
-            {% csrf_token %}
+            <!--{% csrf_token %}
             {% if form.errors %}
             {% for field in form %}
                 {% for error in field.errors %}
                     <div class="alert alert-danger">
                         <strong>{{ error|escape }}</strong>
-<!--                                <strong>{{ field|escape }}</strong>-->
+<!--                                <strong>{{ field|escape }}</strong>
                     </div>
                 {% endfor %}
             {% endfor %}
@@ -69,69 +69,70 @@
                     <strong>{{ error|escape }}</strong>
                 </div>
             {% endfor %}
-        {% endif %}
+        {% endif %}-->
 
         <div class="names">
             <div class="fn">
-                {{form.first_name}}
+<!--                {{form.first_name}}
                 {% if form.first_name.errors %}
                     {% for error in form.first_name.errors %}
                     <div class="alert alert-danger">
                         <strong>{{ error|escape }}</strong>
                     </div>
                     {% endfor %}
-                {% endif %}
-
-                   </div>
-                    <div class="ln">
-                        {{form.last_name}}
+                {% endif %}-->
+		<input type="text" name="" placeholder="First Name" required>
+            </div>
+            <div class="ln">
+<!--                        {{form.last_name}}
                         {% if form.last_name.errors %}
                             {% for error in form.last_name.errors %}
                             <div class="alert alert-danger">
                                 <strong>{{ error|escape }}</strong>
                             </div>
                             {% endfor %}
-                        {% endif %}
-                    </div>
+                        {% endif %}-->
+		<input type="text" name="" placeholder="Last Name" required>
+             </div>
 
-                </div>
+        </div>
 
-                <!--<p>Name</p>-->
-                <!--{{form.name}}-->
-                <!--<input type="text" name="" placeholder="Enter Name" class='form-control' required>-->
-
-                {{form.email}}
-                <!--<input type="text" name="" placeholder="Enter Email Address" class='form-control' required>-->
+<!--                {{form.email}}
                 {% if form.email.errors %}
                     {% for error in form.email.errors %}
                     <div class="alert alert-danger">
                         <strong>{{ error|escape }}</strong>
                     </div>
                     {% endfor %}
-                    {% endif %}
+                    {% endif %}-->
+        <input type="text" name="" placeholder="Enter Email Address" class='form-control' required>
 
-                    {{form.username}}
+        <!--            {{form.username}}
                     {% if form.username.errors %}
                         {% for error in form.username.errors %}
                             <div class="alert alert-danger">
                             <strong>{{ error|escape }}</strong>
                             </div>
                         {% endfor %}
-                    {% endif %}
+                    {% endif %}-->
+       <input type="text" name="" placeholder="Enter Username" class='form-control' required>
     
-                    {{form.password1}}
-                    <!--<input type="password" name="" placeholder="Enter Password" class='form-control' required>-->
-                    {% if form.password1.errors %}
+
+<!--                    {{form.password1}}
+                   {% if form.password1.errors %}
                         {% for error in form.password1.errors %}
                         <div class="alert alert-danger">
                             <strong>{{ error|escape }}</strong>
                         </div>
                         {% endfor %}
-                    {% endif %}
+                    {% endif %}-->
+	<input type="password" name="" placeholder="Enter Password" class='form-control' required>
+        <input type="password" name="" placeholder="Repeat Password" class='form-control' required>
+
+
     
     
-                    {{form.password2}}
-                    <!--<input type="password" name="" placeholder="Enter Password" class='form-control' required>-->
+<!--                    {{form.password2}}
                     {% if form.password2.errors %}
                         {% for error in form.password2.errors %}
 
@@ -139,7 +140,7 @@
                             <strong>{{ error|escape }}</strong>
                         </div>
                         {% endfor %}
-                    {% endif %}
+                    {% endif %}-->
     
                     <p>Are you an employer or an applicant?</p>
                     <div class="radioBtns">

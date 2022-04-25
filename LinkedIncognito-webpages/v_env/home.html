@@ -15,10 +15,12 @@
     <nav>
         <!--------------NAVIGATION BAR--------------->
         <div class="nav-left">
-            <a href="home.html"> <img src="{% static 'app/images/Linkedin-Logo.png' %}" class="logo"></a>
+            <a href="{% url 'home_page' %}"> <img src="{% static 'app/images/Linkedin-Logo.png' %}" class="logo"></a>
             <ul>
                 <li><img src="{% static 'app/images/notification.png' %}"></li>
+		<!-- LINK TO MESSENGER PAGE -->
                 <li> <a href="messenger.html"> <img src="{% static 'app/images/inbox.png' %}"></a> </li>
+		<!-- LINK TO CALENDAR PAGE -->
                 <li><a href="calendar.html"><img src="{% static 'app/images/calendar.png' %}"></a></li>
             </ul>
         </div>
@@ -44,8 +46,13 @@
                 <div class="user-profile">
                     <img src="{% static 'app/images/profile.png' %}">
                     <div>
-                        <p>Company Name</p>
-                        <a href = "companyprofileAdmin.html">See your profile</a>
+			{% if user.is_authenticated %}
+                        	<p>{{user.first_name}} {{user.last_name}}</p>
+				<!-- LINK TO PROFILE PAGE -->
+				<a href = "companyprofileAdmin.html">See your profile</a>
+			{% else %}
+				<p>Careers Portal</p>
+			{% endif %}
                     </div>
                 </div>
                 <hr>
@@ -71,7 +78,11 @@
                 </div>
                 <div class="settings-links">
                     <img src="{% static 'app/images/logout.png' %}" class="settings-icons">
-                    <a href="#"> Logout <img src="{% static 'app/images/arrow.png' %}" width="10px"></a>
+		    {% if user.is_authenticated %}
+	                    <a href="{% url 'login' %}"> Logout <img src="{% static 'app/images/arrow.png' %}" width="10px"></a>
+		    {% else %}
+			    <a href="{% url 'login' %}"> Login <img src="{% static 'app/images/arrow.png' %}" width="10px"></a>
+		    {% endif %}
                 </div>
 
             </div>
@@ -94,7 +105,11 @@
                 <div class="user-profile">
                     <img src="{% static 'app/images/profile.jpg' %}">
                     <div>
-                        <p>@user1</p>
+			{% if user.is_authenticated %}
+				<p>@{{user.username}}</p>
+			{% else %}
+	                        <p>@user1</p>
+			{% endif %}
                         <small>Public</small>
                     </div>
                 </div>
@@ -115,6 +130,7 @@
 
             <div class="post-container">
                 <div class="user-profile">
+		    <!-- LINK TO COMPANY PAGE (does that still exist) -->
                     <a href="companyprofile.html"><img src="{{job.logo.url}}"></a>
                     <div>
                         <p>{{job.company}}</p>
@@ -133,6 +149,7 @@
                 </div>
                 <p>{{job.summary}}</p>
                 <br>
+		<!-- LINK TO JOB POST PAGE -->
                 <a href="job_post.html" class="viewMore">View More</a>
                 
             </div>
@@ -221,7 +238,8 @@
             <img src="{% static 'app/images/advertisement.png' %}" class="sidebar-ads">
             <div class="sidebar-title">
                 <h4>Conversation</h4>
-                <a href="#">Hide Chat</a>
+		<!-- LINK TO MESSENGER PAGE -->
+                <a href="#">View Chat</a>
             </div>
             <div class="online-list">
                 <div class="online">
