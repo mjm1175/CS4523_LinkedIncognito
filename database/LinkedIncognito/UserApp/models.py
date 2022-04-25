@@ -245,7 +245,7 @@ class Resume(models.Model):
     city = models.CharField(null=True)
     state = models.CharField(choices=STATE_CHOICES, default=NY)
     phone_number = models.CharField(null=True)
-    slug = models.SlugField(max_length=300, unique=True, blank=True, null=True)
+    slug = models.SlugField(max_length=500, unique=True, blank=True, null=True)
     date_created = models.DateTimeField(default=timezone.now)
     last_updated = models.DateTimeField()
     cover_letter = models.FileField(upload_to='resumes')
@@ -258,14 +258,17 @@ class Resume(models.Model):
         return reverse('resume-detail', kwargs={'slug': self.slug})
     
     def save(self, *args, **kwargs):
-        # Creating SlugField for the URL - to detailed page
-        if self.slug is None:
-            self.slug = slugify('{} {} {}'.format(self.user.first_name, self.user.last_name, self.user.uniqueId))
-
-        # Creating a unique Identifier for the resume (useful for other things in the future)
+        # Creating a unique Identifier for the resume (useful for other things in the future) && a SlugField for the url
         if self.uniqueId is None:
-            self.uniqueId = 'user-'+str(uuid4()).split('-')[4]
+            self.uniqueId = str(uuid4()).split('-')[0]
+        
+        self.slug = slugify('{} {} {}'.format(self.user.first_name, self.user.last_name, self.user.uniqueId))
 
         # assign a default profile image
-        
+        if self.image is None:
+            self.image = random.choice(self.IMAGES)
+
+        # keep track of everytime someone updates the resume, every time instance is saved this should update
+        self.last_updated = timezone.now
+        super(Resume, self).save(*args, **kwargs)
     
