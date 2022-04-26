@@ -16,12 +16,7 @@
 
     <div class="box">
         <div class="loginbox">
-           <div class = "button-box">
-            <div id="btn"></div>
-            <button type="button" class="toggle-btn" onclick="login()">Login</button>
-            <button type="button" class="toggle-btn" onclick="register()">Register</button>
-           </div>
-            
+            <h1>Log in Here!</h1>
             <form id ="login" class ="input-group">
                 <p>Email Address</p>
                 <input type="text" name="" placeholder="Enter Email Address" required>
@@ -30,63 +25,14 @@
                 <input type="password" name="" placeholder="Enter Password" required>
 
                 <input type="submit" name="" value ="Login">
-                <a href="#">Forget your password?</a><br>
-        
-            </form>
-
-            <form id ="register" class ="input-group">
-                <div class ="names">
-                    <div class ="fn">
-                        <input type="text" name="" placeholder="First Name" required>
-                    </div>
-                    <div class="ln">
-                        <input type="text" name="" placeholder="Last Name" required>
-                    </div>
+                <div style="text-align:center"> 
+                    <a href="register.html">New to LinkedIncognito? Sign Up Here!</a><br>
                 </div>
-
-                <input type="text" name="" placeholder="Enter Email Address" required>
-
-                <input type="password" name="" placeholder="Enter Password" required>
-
-                <p>Are you an employer or an applicant?</p>
-                <div class="radioBtns">
-                    <input type="radio" id="employer" name="radioQ" value="employer">
-                    <label for="employer">Employer</label><br>
-
-                    <input type="radio" id="applicant" name="radioQ" value="applicant">
-                    <label for="applicant">Applicant</label><br>
-                </div>
-                <input type="submit" name="" value ="Register">
         
             </form>
 
         </div>
     </div>
-
-    <script>
-        var loginVar = document.getElementById("login");
-        var regVar = document.getElementById("register");
-        var btnVar = document.getElementById("btn");
-
-        function register() {
-            loginVar.style.left = "-400px";
-            loginVar.style.right = "400px";
-            regVar.style.left = "40px";
-            regVar.style.right = "40px";
-            btnVar.style.left = "138px";
-        }
-
-        function login() {
-            loginVar.style.left = "40px";
-            loginVar.style.right = "40px";
-            regVar.style.left = "400px";
-            regVar.style.right = "-400px";
-            btnVar.style.left = "0px";
-        }
-
-
-    </script>
-
 
 
 </body>
