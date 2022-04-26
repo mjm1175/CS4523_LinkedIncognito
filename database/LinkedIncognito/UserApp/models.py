@@ -1,4 +1,5 @@
 from email.policy import default
+from tkinter import CASCADE
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -231,25 +232,25 @@ class Resume(models.Model):
     ]
 
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    uniqueId = models.CharField(null=True)
+    uniqueId = models.CharField(max_length=100, null=True, blank=True)
     # maybe remove upload_to??
     image = models.ImageField(default='default.png', upload_to='profile_images')
     email_confirmed = models.BooleanField(default=False)
     # rm?
-    date_birth = models.DateField()
+    date_birth = models.DateField(blank=True, null=True)
     # rm?
-    sex = models.CharField(choices=SEX_CHOICES, default=OTHER)
-    marital_status = models.CharField(choices=MARITAL_CHOICES, default=SINGLE)
-    address_line1 = models.CharField(null=True)
-    address_line2 = models.CharField(null=True)
-    city = models.CharField(null=True)
-    state = models.CharField(choices=STATE_CHOICES, default=NY)
-    phone_number = models.CharField(null=True)
+    sex = models.CharField(max_length=100, choices=SEX_CHOICES, default=OTHER)
+    marital_status = models.CharField(max_length=100, choices=MARITAL_CHOICES, default=SINGLE)
+    address_line1 = models.CharField(max_length=100, null=True, blank=True)
+    address_line2 = models.CharField(max_length=100, null=True, blank=True)
+    city = models.CharField(max_length=100, null=True, blank=True)
+    state = models.CharField(max_length=100, choices=STATE_CHOICES, default=NY)
+    phone_number = models.CharField(max_length=12, null=True, blank=True)
     slug = models.SlugField(max_length=500, unique=True, blank=True, null=True)
     date_created = models.DateTimeField(default=timezone.now)
-    last_updated = models.DateTimeField()
-    cover_letter = models.FileField(upload_to='resumes')
-    cv = models.FileField(upload_to='resumes')
+    last_updated = models.DateTimeField(null=True, blank=True)
+    cover_letter = models.FileField(upload_to='resumes', null=True, blank=True)
+    cv = models.FileField(upload_to='resumes', null=True, blank=True)
 
     def __str__(self):
         return '{} {} {}'.format(self.user.first_name, self.user.last_name, self.uniqueId)
@@ -268,17 +269,50 @@ class Resume(models.Model):
         if self.image is None:
             self.image = random.choice(self.IMAGES)
 
-        # keep track of everytime someone updates the resume, every time instance is saved this should update
-        self.last_updated = timezone.now
-
         super(Resume, self).save(*args, **kwargs)
     
 
 class Education(models.Model):
+    # theres more
+    LEVEL5A = 'Some High School Education'
+    LEVEL5B = 'High School Certificate (G.E.D.)'
+    LEVEL5C = 'High School Diploma'
+    LEVEL6A = 'Some College Education'
+    LEVEL6B = "Associate's Degree (AS/AA)"
+    LEVEL6C = "Bachelor's Degree (BS/BA)"
+    LEVEL7A = 'Some Postgraduate School'
+    LEVEL7B = 'Professional School Graduate'
+    LEVEL7C = "Master's Degree (MS/MA)"
+    LEVEL8 = "Doctorate's Degree (PHD)"
+
+    LEVEL_CHOICES = [
+        (LEVEL5A, 'Some High School Education'),
+        (LEVEL5B, 'High School Certificate (G.E.D.)'),
+        (LEVEL5C, 'High School Diploma'),
+        (LEVEL6A, 'Some College Education'),
+        (LEVEL6B, "Associate's Degree (AS/AA)"),
+        (LEVEL6C, "Bachelor's Degree (BS/BA)"),
+        (LEVEL7A, 'Some Postgraduate School'),
+        (LEVEL7B, 'Professional School Graduate'),
+        (LEVEL7C, "Master's Degree (MS/MA)"),
+        (LEVEL8, "Doctorate's Degree (PHD)"),
+    ]
+
+
+    institution = models.CharField(null=True, max_length=200)
+    qualification = models.CharField(null=True, max_length=200)
+    level = models.CharField(choices=LEVEL_CHOICES, default=LEVEL5A, max_length=200)
+    start_date = models.DateField()
+    graduated = models.DateField()
+    major_subject = models.CharField(null=True, max_length=200)
+    resume = models.ForeignKey(Resume, on_delete=models.CASCADE)
+    def __str__(self):
+        return '{} for {} {}'.format(self.qualification, self.resume.user.first_name, self.resume.user.last_name)
+    
 
 class Experience(models.Model):
-    company = models.CharField(null=True)
-    position = models.CharField(null=True)
+    company = models.CharField(null=True, max_length=200)
+    position = models.CharField(null=True, max_length=200)
     start_date = models.DateField()
     end_date = models.DateField()
     experience = models.TextField()

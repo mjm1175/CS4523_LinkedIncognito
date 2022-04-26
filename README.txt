@@ -55,3 +55,18 @@ Start Up:
 
 
 robocopy D:\Spring 2022\Senior Design\LinkedIncognito\LinkedIncognito-webpages\images\* maria@159.203.182.153:/home/maria/dev/LinkedIncognito/LinkedIncognito/LIapp/static/app/images/
+
+still need to change hyperlinks <a> and <href> i think it should be ="/profile" or whatever url you set up in urls.py
+
+cant figure out how to create Employer/applicant user instead of generic
+cant figure out how to put both login and register on the same page
+
+companyprofile admin
+
+when you add a new model:
+	python manage.py makemigrations
+	python manage.py migrate
+
+if you want a class (model) attribute to be optional:
+	in models.py set null=True, blank=True
+	in forms.py set required=False
