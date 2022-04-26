@@ -241,7 +241,7 @@ form {
 .form-inner textarea {
     display: block;
     width: 100%;
-    padding: 15px;
+    padding: 10px 0;
     margin-bottom: 10px;
     border: none;
     border-radius: 20px;
