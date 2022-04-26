@@ -244,7 +244,8 @@ form {
    
 .form-inner input,
 .form-inner textarea,
-.fill-in {
+.fill-in,
+.dropdown {
     display: block;
     width: 100%;
     padding: 10px 0;
@@ -260,6 +261,28 @@ form {
 
 .form-group{
     padding: 0;
+}
+
+.dropdown {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+label {
+    color: #626262;
+    font-size: 12px;
+    margin: 0 auto;
+}
+
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%
+}
+
+.col {
+    width: 400px;
 }
 
 button {

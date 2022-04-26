@@ -229,7 +229,7 @@ form {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 20px; 
+    padding: 20px;
 }
 
 
@@ -238,7 +238,8 @@ form {
  }
    
 .form-inner input,
-.form-inner textarea {
+.form-inner textarea,
+.dropdown {
     display: block;
     width: 100%;
     padding: 10px 0;
@@ -251,6 +252,29 @@ form {
 .form-inner textarea {
     resize: none;
 }
+
+.dropdown {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+label {
+    color: #626262;
+    font-size: 12px;
+    margin: 0 auto;
+}
+
+
+.row {
+    display: flex;
+    justify-content: space-between;
+    width: 100%
+}
+
+.col {
+    width: 400px;
+}
+
 
 button {
     width: 100%;
