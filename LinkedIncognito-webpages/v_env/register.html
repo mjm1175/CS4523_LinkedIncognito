@@ -15,6 +15,23 @@
             <img src="{% static 'app/images/Linkedin-Logo.png' %}" class="logo" alt="LinkedIncognito Logo">
         </div>
     </nav>
+    
+	<!--displaying messages from views if theyre there-->
+        {% if messages %}
+        {% for message in messages %}
+
+        {% if message.tags == 'error' %}
+        <div class="alert alert-danger">
+            {{message}}
+        </div>
+        {% else %}
+        <div class="alert alert-{{message.tags}}">
+            {{message}}
+        </div>
+        {% endif %}
+
+        {% endfor %}
+        {% endif %}
 
     <div class="box">
         <div class="loginbox">>
@@ -62,12 +79,7 @@
                
                 </div>
 
-                <!--<p>Name</p>-->
-                <!--{{form.name}}-->
-                <!--<input type="text" name="" placeholder="Enter Name" class='form-control' required>-->
-
                 {{form.email}}
-                <!--<input type="text" name="" placeholder="Enter Email Address" class='form-control' required>-->
                 {% if form.email.errors %}
                     {% for error in form.email.errors %}
                     <div class="alert alert-danger">
@@ -86,7 +98,6 @@
 		{% endif %}
 
                 {{form.password1}}
-                <!--<input type="password" name="" placeholder="Enter Password" class='form-control' required>-->
                 {% if form.password1.errors %}
                     {% for error in form.password1.errors %}
                     <div class="alert alert-danger">
@@ -97,7 +108,6 @@
 
 
                 {{form.password2}}
-                <!--<input type="password" name="" placeholder="Enter Password" class='form-control' required>-->
                 {% if form.password2.errors %}
                     {% for error in form.password2.errors %}
                     <div class="alert alert-danger">
@@ -116,8 +126,8 @@
                 </div>
 
                 <input type="submit" name="" value ="Register">
-                <a href="login.html">Already Have An Account? Login Here!</a><br>
-        
+        	<a href="{% url 'login' %}">Already Have An Account? Login Here!</a><br>
+
             </form>
 
         </div>
