@@ -321,6 +321,7 @@ class EducationForm(forms.ModelForm):
 
 
 
+from django.contrib.postgres.forms import SimpleArrayField
 
 
 class ExperienceForm(forms.ModelForm):
@@ -345,15 +346,17 @@ class ExperienceForm(forms.ModelForm):
                     )
 
     experience = forms.CharField(
-                    required=True,
+                    required=False,
                     widget=forms.Textarea(attrs={'class':'form-control', 'placeholder':'Enter experience'})
                     )
 
-    skills = forms.CharField(
-                    required=False,
-                    widget=forms.TextInput(attrs={'class':'form-control resume', 'placeholder':'Enter skills separated by commas'})
-                    )                    
+    #skills = forms.CharField(
+    #                required=False,
+    #                widget=forms.TextInput(attrs={'class':'form-control resume', 'placeholder':'Enter skills'})
+    #                #widget=forms.TextInput(attrs={'class':'form-control resume', 'placeholder':'Enter skills separated by commas'})
+    #                )                    
 
+    skills = SimpleArrayField(forms.CharField(max_length=100, required=False))
     class Meta:
         model=Experience
         fields = [
