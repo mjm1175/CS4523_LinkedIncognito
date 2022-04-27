@@ -52,9 +52,10 @@ Start Up:
 	$ source LIenv/bin/activate
 	$ cd LIapp
 
+that port is already in use: sudo fuser -k 8000/tcp
 
-
-robocopy D:\Spring 2022\Senior Design\LinkedIncognito\LinkedIncognito-webpages\images\* maria@159.203.182.153:/home/maria/dev/LinkedIncognito/LinkedIncognito/LIapp/static/app/images/
+PAT: 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
+git push https://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@github.com/mjm1175/CS4523_LI_virtual_server.git
 
 still need to change hyperlinks <a> and <href> i think it should be ="/profile" or whatever url you set up in urls.py
 
@@ -70,3 +71,13 @@ when you add a new model:
 if you want a class (model) attribute to be optional:
 	in models.py set null=True, blank=True
 	in forms.py set required=False
+
+no placeholder for password1 also not registering as password field
+
+last updated not working(on resume)
+
+need edit resume/education/experience
+need add experience form
+no feedback when enter wrong password
+download button for coverletter and cv
+some kind of error with the skills entry on experience form
