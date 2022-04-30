@@ -98,3 +98,47 @@ def SaveFile(request):
         return JsonResponse(file_name, safe=False)
 
 
+from django.contrib.auth import login, authenticate
+from .forms import RegisterForm
+
+def register(request):
+    if request.method == 'GET':
+        form = RegisterForm()
+        context = {'form' : form}
+        return render(request, 'register.html', context)
+
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            print('yes')
+            form.save()
+            user = form.cleaned_data.get('username')
+            email = form.cleaned_data.get('email')
+            raw_password = form.cleaned_data.get('password1')
+            account = authenticate(email=email, password=raw_password)
+            messages.success(request, 'Account was created for ' + user)
+            login(request, account)
+            return redirect('home_page')
+        else:
+            print('no')
+            print(form.errors)
+            messages.error(request, 'Error processing your request')
+            context = {'form': form}
+            return render(request, 'register.html', context)
+
+    return render(request, 'register.html', {})
+
+
+@csrf_protect
+def public_profile(request, slug):
+    obj = Account.objects.get(slug=slug)
+
+    educations = Education.objects.filter(resume=obj.resume)
+    experiences = Experience.objects.filter(resume=obj.resume)
+
+    context = {}
+    context['object'] = obj
+    context['educations'] = educations
+    context['experiences'] = experiences    
+
+    return render(request, 'public_profile.html', context)

@@ -2,9 +2,9 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
-from .models import Resume, Education, Experience
+from .models import Resume, Education, Experience, Account
 
-class RegisterForm(forms.ModelForm):
+class RegisterForm(UserCreationForm):
 
     EMPLOYER = 'Employer'
     APPLICANT = 'Applicant'
@@ -45,7 +45,7 @@ class RegisterForm(forms.ModelForm):
     password1 = forms.CharField(
                     help_text='Enter Password',
                     required=True,
-                    widget=forms.PasswordInput(attrs={'class':'form-control', 'placeholder':'Repeat Password'}),
+                    widget=forms.PasswordInput(attrs={'class':'form-control', 'placeholder':'Enter Password'}),
                     )
 
     password2 = forms.CharField(

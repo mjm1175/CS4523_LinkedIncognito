@@ -52,19 +52,17 @@ Start Up:
 	$ source LIenv/bin/activate
 	$ cd LIapp
 
-that port is already in use: sudo fuser -k 8000/tcp
-
-PAT: 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
-git push https://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@github.com/mjm1175/CS4523_LI_virtual_server.git
-
-still need to change hyperlinks <a> and <href> i think it should be ="/profile" or whatever url you set up in urls.py
+that port is already in use error: sudo fuser -k 8000/tcp
 
 cant figure out how to create Employer/applicant user instead of generic
-cant figure out how to put both login and register on the same page
 
 companyprofile admin
 
-when you add a new model:
+create new app:
+	python manage.py startapp <appname>
+	add to INSTALLED_APPS in LIapp/settings.py
+
+after any edits to models.py:
 	python manage.py makemigrations
 	python manage.py migrate
 
@@ -81,3 +79,15 @@ need add experience form
 no feedback when enter wrong password
 download button for coverletter and cv
 some kind of error with the skills entry on experience form
+
+try to print job.owner
+add back when job creation is up
+
+do passwords have to match rn
+its not giving error if invalid password
+
+move image from resume to usera(acct)
+
+try sending user in as object for both
+
+could add resume info to profile
