@@ -4,7 +4,16 @@ from django.contrib.auth.forms import UserCreationForm
 
 from .models import Resume, Education, Experience
 
-class RegisterForm(UserCreationForm):
+class RegisterForm(forms.ModelForm):
+
+    EMPLOYER = 'Employer'
+    APPLICANT = 'Applicant'
+
+    ROLE_CHOICES = [
+        (EMPLOYER, 'Employer'),
+        (APPLICANT, 'Applicant')
+    ]
+
     email = forms.EmailField(
                     max_length=100,
                     required=True,
@@ -36,12 +45,18 @@ class RegisterForm(UserCreationForm):
     password1 = forms.CharField(
                     help_text='Enter Password',
                     required=True,
+                    widget=forms.PasswordInput(attrs={'class':'form-control', 'placeholder':'Repeat Password'}),
                     )
 
     password2 = forms.CharField(
                     required=True,
                     help_text='Enter Password Again',
                     widget=forms.PasswordInput(attrs={'class':'form-control', 'placeholder':'Repeat Password'}),
+                    )
+
+    role = forms.ChoiceField(
+                    choices=ROLE_CHOICES,
+                    widget=forms.Select(attrs={'class':'nice-select rounded'})
                     )
 
     #check = forms.BooleanField(
@@ -54,10 +69,10 @@ class RegisterForm(UserCreationForm):
     #    super(Member, self).save(*args, **kwargs)
 
     class Meta:
-        model = User
+        model = Account
 
         fields = [
-            'username', 'email', 'first_name', 'last_name', 'password1', 'password2'
+            'username', 'email', 'first_name', 'last_name', 'password1', 'password2', 'role'
         ]
 
 

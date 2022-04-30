@@ -33,6 +33,117 @@ from django.contrib.auth.models import User
 #     Date = models.Date()
 #     Time = models.Time()
 
+# custom user model
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+
+class MyAccountManager(BaseUserManager):
+    def create_user(self, email, username, role, first_name, last_name, password):
+        if not email:
+            raise ValueError("Users must have email address.")
+        if not username:
+            raise ValueError("Users must have username.")
+        if not role:
+            raise ValueError("Users must have role.")
+        if not first_name:
+            raise ValueError("Users must enter first name.")
+        if not last_name:
+            raise ValueError("Users must enter last name.")
+        if not password:
+            raise ValueError("Users must have password.")                                                
+
+        user = self.model(
+            email = self.normalize_email(email),
+            password=password,
+            username = username,  
+            role = role,
+            first_name = first_name,
+            last_name = last_name
+        )
+
+        user.set_password(password)
+        user.save(using=self._db)
+        return user    
+
+    def create_superuser(self, email, username, role, first_name, last_name, password):
+        user = self.create_user(
+            email = self.normalize_email(email),
+            password=password,
+            username = username,  
+            role = role,
+            first_name = first_name,
+            last_name = last_name       
+        )
+        user.is_admin=True
+        user.is_staff=True
+        user.is_superuser=True
+        user.save(using=self._db)
+        return user    
+
+
+
+
+class Account(AbstractBaseUser):
+    EMPLOYER = 'Employer'
+    APPLICANT = 'Applicant'
+
+    ROLE_CHOICES = [
+        (EMPLOYER, 'Employer'),
+        (APPLICANT, 'Applicant')
+    ]
+
+    email = models.EmailField(verbose_name="email", max_length=100, unique=True)
+    # begin required
+    username = models.CharField(max_length=100, unique=True)
+    date_joined = models.DateTimeField(verbose_name="date joined", auto_now_add=True)
+    last_login = models.DateTimeField(verbose_name="last login", auto_now=True)
+    is_admin = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    # end required
+    first_name = models.CharField(max_length=100, default="Owner")
+    last_name = models.CharField(max_length=100, default = "Owner")
+    slug = models.SlugField(max_length=500, unique=True, blank=True, null=True)
+    uniqueId = models.CharField(max_length=100, null=True, blank=True)
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, default=APPLICANT)
+
+    # allowing users to login using email
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ['username', 'role', 'first_name', 'last_name']
+    #REQUIRED_FIELDS = ['username']
+
+
+    objects = MyAccountManager()
+
+    def __str__(self):
+        #return '{} {} {}'.format(self.first_name, self.last_name, self.uniqueId)
+        return self.email
+
+    # begin required
+    def has_perm(self, perm, obj=None):
+        return self.is_admin
+
+    def has_module_perms(self, app_label):
+        return True
+    # end required
+
+    #def get_absolute_url(self):
+    #    return reverse('public_profile', kwargs={'slug': self.slug})
+    
+    #def save(self, *args, **kwargs):
+        # Creating a unique Identifier for the resume (useful for other things in the future) && a SlugField for the url
+    #    if self.uniqueId is None:
+    #        self.uniqueId = str(uuid4()).split('-')[0]
+        
+    #    self.slug = slugify('{} {} {}'.format(self.first_name, self.last_name, self.uniqueId))
+
+    #    super(Resume, self).save(*args, **kwargs)
+    
+
+
+
+
+
 
 # Example model
 class Job(models.Model):
@@ -71,12 +182,17 @@ class Job(models.Model):
     requirements = models.TextField()
     logo = models.ImageField(default='default-job.png', upload_to='upload_images')
     date_created = models.DateTimeField(default=timezone.now)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(Account, on_delete=models.CASCADE)
     # might should change User to Company?
     # models.CASCADE means that if user gets deleted, the job will be deleted with them
 
     def __str__(self):
         return '{} looking for {}'.format(self.company, self.title)
+
+
+
+
+
 
 
 # Currently unused, TRYING to get them to inherit from user class and be created upon registration but no luck so far

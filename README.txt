@@ -54,8 +54,8 @@ Start Up:
 
 that port is already in use: sudo fuser -k 8000/tcp
 
-PAT: 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
-git push https://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@github.com/mjm1175/CS4523_LI_virtual_server.git
+PAT: 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
+git push https://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@github.com/mjm1175/CS4523_LI_virtual_server.git
 
 still need to change hyperlinks <a> and <href> i think it should be ="/profile" or whatever url you set up in urls.py
 
