@@ -142,3 +142,12 @@ def public_profile(request, slug):
     context['experiences'] = experiences    
 
     return render(request, 'public_profile.html', context)
+
+@csrf_protect
+def job_post(request, slug):
+    obj = Job.objects.get(slug=slug)
+
+    context = {}
+    context['job'] = obj  
+
+    return render(request, 'job_post.html', context)

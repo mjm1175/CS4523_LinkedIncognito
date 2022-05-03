@@ -70,7 +70,6 @@ if you want a class (model) attribute to be optional:
 	in models.py set null=True, blank=True
 	in forms.py set required=False
 
-no placeholder for password1 also not registering as password field
 
 last updated not working(on resume)
 
@@ -83,11 +82,5 @@ some kind of error with the skills entry on experience form
 try to print job.owner
 add back when job creation is up
 
-do passwords have to match rn
-its not giving error if invalid password
-
 move image from resume to usera(acct)
 
-try sending user in as object for both
-
-could add resume info to profile

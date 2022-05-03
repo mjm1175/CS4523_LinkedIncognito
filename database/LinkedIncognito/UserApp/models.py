@@ -173,21 +173,34 @@ class Job(models.Model):
 
     title = models.CharField(max_length=150)
     company = models.CharField(max_length=100)
-    location = models.CharField(max_length=200)
-    salary = models.CharField(max_length=100)
-    type = models.CharField(max_length=10, choices=TYPE_CHOICES, default=FULL_TIME)
+    location = models.CharField(max_length=200) # choice
+    salary = models.CharField(max_length=100) # choice
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES, default=FULL_TIME) # choice
     experience = models.CharField(max_length=10, choices=EXP_CHOICES, default=TIER1)
     summary = models.TextField()
     description = models.TextField()
-    requirements = models.TextField()
+    requirements = models.TextField() # array???
     logo = models.ImageField(default='default-job.png', upload_to='upload_images')
     date_created = models.DateTimeField(default=timezone.now)
     owner = models.ForeignKey(Account, on_delete=models.CASCADE)
-    # might should change User to Company?
+    slug = models.SlugField(max_length=500, unique=True, blank=True, null=True)
+    uniqueId = models.CharField(max_length=100, null=True, blank=True)    # might should change User to Company?
     # models.CASCADE means that if user gets deleted, the job will be deleted with them
 
     def __str__(self):
         return '{} looking for {}'.format(self.company, self.title)
+
+    def get_absolute_url(self):
+        return reverse('job_post', kwargs={'slug': self.slug})
+    
+    def save(self, *args, **kwargs):
+        # Creating a unique Identifier for the user (useful for other things in the future) && a SlugField for the url
+        if self.uniqueId is None:
+            self.uniqueId = str(uuid4()).split('-')[0]
+        
+        self.slug = slugify('{} {} {}'.format(self.title, self.company, self.uniqueId))
+
+        super(Job, self).save(*args, **kwargs)
 
 
 
@@ -209,6 +222,9 @@ from django.template.defaultfilters import slugify
 from uuid import uuid4
 import random
 
+
+# in person or remote
+# location
 class Resume(models.Model):
     # seems like we wont be using these LMFAO
     MALE = 'Male'
@@ -360,7 +376,7 @@ class Resume(models.Model):
     address_line1 = models.CharField(max_length=100, null=True, blank=True)
     address_line2 = models.CharField(max_length=100, null=True, blank=True)
     city = models.CharField(max_length=100, null=True, blank=True)
-    state = models.CharField(max_length=100, choices=STATE_CHOICES, default=NY)
+    state = models.CharField(max_length=100, choices=STATE_CHOICES, default=NY) # choice
     phone_number = models.CharField(max_length=12, null=True, blank=True)
     slug = models.SlugField(max_length=500, unique=True, blank=True, null=True)
     date_created = models.DateTimeField(default=timezone.now)
@@ -435,7 +451,7 @@ class Experience(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
     experience = models.TextField(null=True, blank=True)
-    skills = ArrayField(models.CharField(max_length=100, null=True, blank=True), default=list)
+    skills = ArrayField(models.CharField(max_length=100, null=True, blank=True), default=list) # skills
     date_created = models.DateTimeField(default=timezone.now)
     resume = models.ForeignKey(Resume, on_delete=models.CASCADE)
 
