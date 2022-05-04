@@ -17,6 +17,7 @@
 
             <div class="messenger-top-nav-image">
                 <div class="messenger-nav-image">
+                    <!--LEAVE THIS ALONE, THIS IS YOU-->
                     {% if user.resume %}		
                     <img src="{{user.resume.image.url}}">
                     {% else %}
@@ -88,7 +89,7 @@
         <div class="messenger-user-search-container">
             <div class="messenger-user-search-icon">
                 <div class="messenger-user-search-image">
-                    {% if user.resume %}		
+                    {% if recipient.resume %}		
                     <img src="{{user.resume.image.url}}">
                     {% else %}
                     <img src="{% static 'app/images/profile3.jpg' %}">
@@ -98,7 +99,7 @@
             <div class="messenger-user-search-name">
                 <div class="messenger-user-search-name-inside">
                     <!--CHANGE TO RECIPIENT USERNAME && PROFILE-->
-                    <a href="{% url 'profile' %}"> <b>@{{user.username}}</b> </a>
+                    <a href="{% url 'profile' %}"> <b>@{{recipient.username}}</b> </a>
                 </div>
                 <div class="messenger-user-last-seen">
                     <div class="messenger-last-seen-message">
@@ -162,12 +163,14 @@
             <div class="messenger-message-left">
                 <div class="messenger-chat-container">
                     <div class="messenger-chat-box">
+                        {% for message in thread %}
+                        {% if message.i_sent %}
                         <div class="messenger-chat-box-right">
                             <div class="messenger-chat-right">
                                 <div class="messenger-chat-right-inside">
                                     <div class="messenger-chat-right-inside-text">
                                         <div class="messenger-chat-right-text-display">
-                                            <p>Hi</p>
+                                            <p>{{message.the_one_i_sent}}</p>
                                         </div>
                                     </div>
                                     <div class="messenger-chat-right-icon">
@@ -178,6 +181,8 @@
                                 </div>
                             </div>
                         </div>
+                        {% endif %}
+                        {% if message.they_sent %}
                         <div class="messenger-chat-box-left">
                             <div class="messenger-chat-left">
                                 <div class="messenger-chat-left-inside">
@@ -188,12 +193,15 @@
                                     </div>                                            
                                     <div class="messenger-chat-left-inside-text">
                                         <div class="messenger-chat-left-text-display">
-                                            <p>Hello</p>
+                                            <p>{{message.they_sent}}</p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>                        
+                        {% endif %}
+                        {% endfor %}
+
                     </div>
                 </div>
                 <div class="messenger-chat-bottom">
