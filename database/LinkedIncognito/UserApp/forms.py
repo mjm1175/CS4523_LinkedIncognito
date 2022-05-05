@@ -80,15 +80,6 @@ class DateInput(forms.DateInput):
     input_type = 'date'
 
 class ResumeForm(forms.ModelForm):
-    # seems like we wont be using these LMFAO
-    MALE = 'Male'
-    FEMALE = 'Female'
-    NONBINARY = 'Nonbinary'
-    OTHER = 'Other'
-    MARRIED = 'Married'
-    SINGLE = 'Single'
-    WIDOWED = 'Widowed'
-    DIVORCED = 'Divorced'
 
     AK	= 'Alaska'
     AL	= 'Alabama'
@@ -142,20 +133,6 @@ class ResumeForm(forms.ModelForm):
     WI	= 'Wisconsin'
     WV	= 'West Virginia'
     WY = 'Wyoming'
-
-    SEX_CHOICES = [
-        (MALE, 'Male'),
-        (FEMALE, 'Female'),
-        (NONBINARY, 'Nonbinary'),
-        (OTHER, 'Other'),
-    ]
-
-    MARITAL_CHOICES = [
-        (MARRIED, 'Married'),
-        (SINGLE, 'Single'),
-        (WIDOWED, 'Widowed'),
-        (DIVORCED, 'Divorced'),
-    ]
 
     STATE_CHOICES = [
         (AK,'Alaska'),
@@ -216,47 +193,17 @@ class ResumeForm(forms.ModelForm):
                     required=False,
                     widget=forms.FileInput(attrs={'class':'form-control'}),
                     )
-
-    date_birth = forms.DateField(
-                    required=True,
-                    widget=DateInput(attrs={'class':'form-control', 'placeholder':'Enter a date: '})
-                    )
-
-    sex = forms.ChoiceField(
-                    choices = SEX_CHOICES,
-                    widget=forms.Select(attrs={'class':'nice-select rounded'})
-                    )
-
-    marital_status = forms.ChoiceField(
-                    choices=MARITAL_CHOICES,
-                    widget=forms.Select(attrs={'class':'nice-select rounded'})
-                    )
-
-    address_line1 = forms.CharField(
-                    required=True,
-                    widget=forms.TextInput(attrs={'class':'form-control resume', 'placeholder':'Enter Address Line 1'}),
-                    )
-    
-    address_line2 = forms.CharField(
-                    required=False,
-                    widget=forms.TextInput(attrs={'class':'form-control resume', 'placeholder':'Enter Address Line 2'})
-                    )
     
     city = forms.CharField(
                     required=True,
                     widget=forms.TextInput(attrs={'class':'form-control resume','placeholder':'Enter City'})
                     )
     
-    state = forms.CharField(
+    state = forms.ChoiceField(
                     choices = STATE_CHOICES,
                     widget=forms.Select(attrs={'class': 'nice-select round'})
                     )
 
-    phone_number = forms.CharField(
-                    required=True,
-                    widget=forms.TextInput(attrs={'class': 'form-control resume', 'placeholder': 'Enter Phone Number'})
-                    )
-    
     cover_letter = forms.FileField(
                     required=False,
                     widget=forms.FileInput(attrs={'class':'form-control'})
@@ -267,13 +214,13 @@ class ResumeForm(forms.ModelForm):
                     widget=forms.FileInput(attrs={'class':'form-control'})
                     )
 
+    company = forms.ModelChoiceField(queryset=Company.objects.all())
+
     class Meta:
         model = Resume
         fields = [
-            'image', 'date_birth', 'sex', 'marital_status', 'address_line1', 'address_line2',
-            'city', 'state', 'phone_number', 'cover_letter', 'cv',
+            'image', 'city', 'state', 'cover_letter', 'cv', 'company'
         ]
-
 
 
 
@@ -307,10 +254,6 @@ class EducationForm(forms.ModelForm):
                     required=True,
                     widget=forms.TextInput(attrs={'class':'form-control resume', 'placeholder':'Name of Institution'})
                     )
-    qualification = forms.CharField(
-                    required=True,
-                    widget=forms.TextInput(attrs={'class':'form-control resume', 'placeholder':'Name of Qualification'})
-                    )
     level = forms.ChoiceField(
                     choices=LEVEL_CHOICES,
                     widget=forms.Select(attrs={'class':'nice-select rounded'})
@@ -331,7 +274,7 @@ class EducationForm(forms.ModelForm):
     class Meta:
         model=Education
         fields = [
-            'institution', 'qualification', 'level', 'start_date', 'graduated', 'major_subject'
+            'institution', 'level', 'start_date', 'graduated', 'major_subject'
         ]
 
 
@@ -340,10 +283,7 @@ from django.contrib.postgres.forms import SimpleArrayField
 
 
 class ExperienceForm(forms.ModelForm):
-    company = forms.CharField(
-                    required=True,
-                    widget=forms.TextInput(attrs={'class':'form-control resume', 'placeholder':'Company Worked For'})
-                    )
+    company = forms.ModelChoiceField(queryset=Company.objects.all())
     
     position = forms.CharField(
                     required=True,
@@ -358,24 +298,13 @@ class ExperienceForm(forms.ModelForm):
     end_date = forms.DateField(
                     required=True,
                     widget=DateInput(attrs={'class':'form-control', 'placeholder':'Enter a date: '})
-                    )
-
-    experience = forms.CharField(
-                    required=False,
-                    widget=forms.Textarea(attrs={'class':'form-control', 'placeholder':'Enter experience'})
-                    )
-
-    #skills = forms.CharField(
-    #                required=False,
-    #                widget=forms.TextInput(attrs={'class':'form-control resume', 'placeholder':'Enter skills'})
-    #                #widget=forms.TextInput(attrs={'class':'form-control resume', 'placeholder':'Enter skills separated by commas'})
-    #                )                    
+                    )                   
 
     skills = SimpleArrayField(forms.CharField(max_length=100, required=False))
     class Meta:
         model=Experience
         fields = [
-            'company', 'position', 'start_date', 'end_date', 'experience', 'skills'
+            'company', 'position', 'start_date', 'end_date', 'skills'
         ]
 
 
@@ -411,30 +340,26 @@ class CreateJobForm(forms.ModelForm):
                 widget=forms.TextInput(attrs={'class':'form-control jobs', 'placeholder':'Job Title'})
                 )
 
-    company = forms.CharField(
-                max_length=100,
-                required=True,
-                widget=forms.TextInput(attrs={'class':'form-control jobs', 'placeholder':'Company Name'})
-                )
-
     location = forms.CharField(
                 max_length=200,
-                required=True,
+                required=False,
                 widget=forms.TextInput(attrs={'class':'form-control jobs', 'placeholder':'Location'})
                 )
 
     salary = forms.CharField(
                 max_length=100,
-                required=True,
+                required=False,
                 widget=forms.TextInput(attrs={'class':'form-control jobs', 'placeholder':'Salary'})
                 )
 
     type = forms.ChoiceField(
+                    required=False,
                     choices=TYPE_CHOICES,
                     widget=forms.Select(attrs={'class':'nice-select rounded'})
                     ) 
 
     experience = forms.ChoiceField(
+                    required=False,
                     choices=EXP_CHOICES,
                     widget=forms.Select(attrs={'class':'nice-select rounded'})
                     ) 
@@ -450,18 +375,18 @@ class CreateJobForm(forms.ModelForm):
                 )
 
     requirements = forms.CharField(
-                required=True,
+                required=False,
                 widget=forms.TextInput(attrs={'class':'form-control jobs', 'placeholder':'Requirements'})
                 )
-
-    logo = forms.ImageField(
+    
+    closing_date = forms.DateField(
                     required=False,
-                    widget=forms.FileInput(attrs={'class':'form-control'})
+                    widget=DateInput(attrs={'class':'form-control', 'placeholder':'Stop Accepting Applications After: '})
                     )
     
     class Meta:
         model=Job
         fields = [
             'title', 'company', 'location', 'salary', 'type', 'experience', 'summary', 'description',
-            'requirements', 'logo'
+            'requirements', 'closing_date'
         ]

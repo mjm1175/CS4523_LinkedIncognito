@@ -15,4 +15,13 @@ urlpatterns=[
     re_path(r'job_posting/([0-9]+)$', views.jobPostingApi),
 
     re_path(r'^applicant/save_file$', views.SaveFile),
+
+
+
+
+#########################
+# NEW NOT YET IN VSERVER
+#########################
+    path('jobs/company/<slug:slug>', jobs_views.company_detail, name='company_detail'),
+
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

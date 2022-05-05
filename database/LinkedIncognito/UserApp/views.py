@@ -151,3 +151,101 @@ def job_post(request, slug):
     context['job'] = obj  
 
     return render(request, 'job_post.html', context)
+
+
+##############################
+# NEW NOT YET IN VSERVER
+#############################
+
+def company_detail(request, slug):
+    obj = Company.objects.get(slug=slug)
+    # getting all jobs whose company's slug matches this slug
+    # (all jobs in this company)
+    jobs = Job.objects.filter(company__slug=slug)
+
+    context = {}
+    context['company'] = obj
+    context['jobs'] = jobs
+
+    return render(request, 'company_detail.html', context)
+
+
+def job_post_creation(request):
+    if request.method == 'GET':
+        form = CreateJobForm()
+        context = {'form' : form}
+        return render(request, 'job_post_creation.html', context)
+
+    if request.method == 'POST':
+        form = CreateJobForm(request.POST)
+
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.owner = request.user
+            # might throw error
+            obj.company = request.user.company
+            obj.save()
+            messages.success(request, 'Job post created successfully.')
+
+            return redirect('job_post', slug=obj.slug)
+
+        else:
+            messages.error(request, 'Error processing your request')
+            context = {'form': form}
+            return render(request, 'job_post_creation.html', context)
+
+    return render(request, 'job_post_creation.html', {})
+
+
+
+@login_required
+def create_resume(request):
+    if request.method == 'POST':
+        # request.FILES bc files upload option in form
+        form = ResumeForm(request.POST, request.FILES)
+        if form.is_valid():
+            obj = form.save(commit=False)
+
+            # setting 1:1 attribute
+            obj.user = request.user
+            request.user.company = form.company
+
+            obj.save()
+
+            messages.success(request, 'Resume created successfully.')
+            return redirect('profile')
+        else:
+            messages.error(request, 'Error processing your request')
+            context = {'form': form}
+            return render(request, 'create-resume.html', context)
+
+    if request.method == 'GET':
+        form = ResumeForm()
+        context = {'form': form}
+        return render(request, 'create-resume.html', context)
+
+    return render(request, 'create-resume.html', {})
+
+
+def delete_experience(request, pk):
+    exp = Experience.objects.get(pk=pk)
+
+    if request.method == 'POST':
+        exp.delete()
+        messages.success(request, 'Experience deleted successfully')
+        slug = request.user.resume.slug
+        return redirect('resume_detail', slug=slug)
+
+    return render(request, 'resume_detail.html', {'exp': exp})
+
+
+def delete_education(request, pk):
+    edu = Education.objects.get(pk=pk)
+
+    if request.method == 'POST':
+        edu.delete()
+        messages.success(request, 'Education deleted successfully')
+        slug = request.user.resume.slug
+        return redirect('resume_detail', slug=slug)
+
+    return render(request, 'resume_detail.html', {'edu': edu})

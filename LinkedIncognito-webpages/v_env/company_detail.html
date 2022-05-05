@@ -4,7 +4,7 @@
 {% block homemain %}
     <!--------------MAIN CONTENT--------------->
     <div class="main-content">
-        <h2>All Jobs</h2>        
+        <h2>{{company.name}} Jobs</h2>
         <!-- Populating from database information -->
 
         <!-- This means we must send variable 'jobs' from backend -->
@@ -12,9 +12,9 @@
 
         <div class="post-container">
             <div class="user-profile">
-                <a href="{% url 'company_detail' job.company.slug %}"><img src="{{job.company.companyLogo.url}}"></a>
+                <a href="{% url 'job_post' job.slug %}"><img src="{{job.company.companyLogo.url}}"></a>
                 <div>
-                    <p>{{job.company}}</p>
+                    <p>{{job.company.name}}</p>
                     <span>{{job.date_created}}</span>
                 </div>
             </div>
@@ -31,10 +31,9 @@
             <p>{{job.summary}}</p>
             <br>
             <!-- LINK TO JOB POST PAGE -->
-            <a href="{% url 'job_post' job.slug %}" class="viewMore">View More</a>
+            <a href="job_post.html" class="viewMore">View More</a>
             
         </div>
         {% endfor %}
     </div>
-
 {% endblock %}

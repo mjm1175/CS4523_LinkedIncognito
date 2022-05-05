@@ -73,59 +73,25 @@
                     <strong>{{ error|escape }}</strong>
                 </div>
             {% endfor %}
-        {% endif %}              
+        {% endif %}   
     </div>
-    
-    <h3>Attach a Cover Letter:</h3>
     <div class="col-md-6">
         <div class="form-group app-label">
-            <label class="text-muted">Cover Letter :</label><br>
-            {{form.cover_letter}}
+            <label class="text-muted">Company Affiliation <span class="text-danger">*</span> :</label><br>
+            {{form.company}}
         </div>
-        {% if form.cover_letter.errors %}
-            {% for error in form.cover_letter.errors %}
+        {% if form.company.errors %}
+            {% for error in form.company.errors %}
                 <div class="alert alert-danger">
                     <strong>{{ error|escape }}</strong>
                 </div>
             {% endfor %}
-        {% endif %}              
-    </div>
-
-    <h3>Attach Your Resume:</h3>
-    <div class="col-md-6">
-        <div class="form-group app-label">
-            <label class="text-muted">Resume :</label><br>
-            {{form.cv}}
-        </div>
-        {% if form.cv.errors %}
-            {% for error in form.cv.errors %}
-                <div class="alert alert-danger">
-                    <strong>{{ error|escape }}</strong>
-                </div>
-            {% endfor %}
-        {% endif %}              
-    </div>
-    <!--<form method="POST" enctype="multipart/form-data">-->
-
-        {% if comp_form.errors %}
-            {% for field in comp_form %}
-                {% for error in field.errors %}
-                    <div class="alert alert-danger">
-                        <strong>{{ error|escape }}</strong>
-                    </div>
-                {% endfor %}
-                {% for error in comp_form.non_field_errors %}
-                    <div class="alert alert-danger">
-                        <strong>{{ error|escape }}</strong>
-                    </div>           
-                {% endfor %} 
-            {% endfor %}            
-        {% endif %}
+        {% endif %}   
+    </div>    
         <button type="submit" class="submitBtn btn btn-primary" value="Save Changes">Save Changes</button>
     </div>
-</form>
-
-
+    </form>
+    
 </div>
 {% endblock %}
 
