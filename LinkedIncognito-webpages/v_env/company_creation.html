@@ -9,7 +9,7 @@
 
 {% block body %}
     <div class="posting">
-    <form id ="create-job" method='POST' class ="input-group">
+    <form id ="create-company" method='POST' class ="input-group" enctype="multipart/form-data">
 
         {% csrf_token %}
 
@@ -30,66 +30,29 @@
         {% endif %}
         
         <div class="form-inner">
-          <h1>Create Your Job Posting</h1>
+          <h1>Add Your Company</h1>
 
            <label>Upload Your Company's Logo: </label>
-            {{form.logo}}
-            {% if form.logo.errors %}
-                {% for error in form.logo.errors %}
+            {{form.companyLogo}}
+            {% if form.companyLogo.errors %}
+                {% for error in form.companyLogo.errors %}
                 <div class="alert alert-danger">
                     <strong>{{ error|escape }}</strong>
                 </div>
                 {% endfor %}
             {% endif %}             
             
-            {{form.title}}
-            {% if form.title.errors %}
-                {% for error in form.title.errors %}
+            <label>The Name of Your Company: </label>
+            {{form.name}}
+            {% if form.name.errors %}
+                {% for error in form.name.errors %}
                 <div class="alert alert-danger">
                     <strong>{{ error|escape }}</strong>
                 </div>
                 {% endfor %}
             {% endif %} 
 
-            {{form.company}}
-            {% if form.company.errors %}
-                {% for error in form.company.errors %}
-                <div class="alert alert-danger">
-                    <strong>{{ error|escape }}</strong>
-                </div>
-                {% endfor %}
-            {% endif %} 
-
-            <div class = "row">
-                <div class = "col">{{form.location}}</div>
-                <div class = "col">{{form.salary}}</div>
-
-                {% if form.location.errors %}
-                    {% for error in form.location.errors %}
-                    <div class="alert alert-danger">
-                        <strong>{{ error|escape }}</strong>
-                    </div>
-                    {% endfor %}
-                {% endif %} 
-
-                {% if form.salary.errors %}
-                    {% for error in form.salary.errors %}
-                    <div class="alert alert-danger">
-                        <strong>{{ error|escape }}</strong>
-                    </div>
-                    {% endfor %}
-                {% endif %}                 
-            </div>
-
-            {{form.summary}}
-            {% if form.summary.errors %}
-                {% for error in form.summary.errors %}
-                <div class="alert alert-danger">
-                    <strong>{{ error|escape }}</strong>
-                </div>
-                {% endfor %}
-            {% endif %}         
-            
+            <label>Add a Company Bio: (optional) </label>            
             {{form.description}}
             {% if form.description.errors %}
                 {% for error in form.description.errors %}
@@ -97,42 +60,9 @@
                     <strong>{{ error|escape }}</strong>
                 </div>
                 {% endfor %}
-            {% endif %}         
-
-            <div class="dropdown">
-                <label for="experience">Required Experience: </label>
-                {{form.experience}}
-            </div>
-            {% if form.experience.errors %}
-                {% for error in form.experience.errors %}
-                <div class="alert alert-danger">
-                    <strong>{{ error|escape }}</strong>
-                </div>
-                {% endfor %}
-            {% endif %}       
-            
-            <div class="dropdown">
-                <label for="type">Work Format: </label>
-                {{form.type}}
-            </div>
-            {% if form.type.errors %}
-                {% for error in form.type.errors %}
-                <div class="alert alert-danger">
-                    <strong>{{ error|escape }}</strong>
-                </div>
-                {% endfor %}
-            {% endif %}              
-
-            {{form.requirements}}
-            {% if form.requirements.errors %}
-                {% for error in form.requirements.errors %}
-                <div class="alert alert-danger">
-                    <strong>{{ error|escape }}</strong>
-                </div>
-                {% endfor %}
-            {% endif %}             
-          
-          <button type="submit">Post</button>
+            {% endif %} 
+    
+          <button type="submit">Save</button>
         </div>
       </form>
     </div>

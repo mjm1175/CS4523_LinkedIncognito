@@ -15,12 +15,18 @@ Home
     <!--------------LEFT SIDEBAR--------------->
     <div class="left-sidebar">
         <div class="imp-links">
-            <a href="#"><img src="{% static 'app/images/news.png' %}"> Latest Jobs </a>
-            <a href="#"><img src="{% static 'app/images/friends.png' %}"> Connections </a>
-        </div>
+            <a href="{% url 'home_page' %}"><img src="{% static 'app/images/news.png' %}"> View Job Postings </a>
+            <a href="{% url 'all_companies' %}"><img src="{% static 'app/images/friends.png' %}"> View Companies </a>
+        {% if user.role == 'Employer' %}
+            <a href="{% url 'all_users' %}"><img src="{% static 'app/images/group.png' %}"> View Users </a>
+        </div>         
         <div class="imp-links">
-            <a href="{% url 'job_post_creation' %}"><button>Add New Job Posting</button></a>
-        </div>        
+            <a href="{% url 'job_post_creation' %}"><img src="{% static 'app/images/add.png' %}"> Add New Job Posting </a>
+            <a href="{% url 'company_creation' %}"><img src="{% static 'app/images/add-friends.png' %}"> Add New Company </a>
+        </div>  
+        {% else %}
+        </div>         
+        {% endif %}    
     </div>
     <!--------------MAIN CONTENT--------------->
     {% block homemain %}

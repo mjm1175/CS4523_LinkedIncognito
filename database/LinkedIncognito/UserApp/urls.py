@@ -23,5 +23,7 @@ urlpatterns=[
 # NEW NOT YET IN VSERVER
 #########################
     path('jobs/company/<slug:slug>', jobs_views.company_detail, name='company_detail'),
+    path('all-companies/', users_views.home_companies, name='all_companies'),    
 
 ]+static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

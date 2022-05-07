@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from pytz import timezone
 from rest_framework.parsers import JSONParser
 from django.http.response import JsonResponse
 
@@ -99,7 +100,7 @@ def SaveFile(request):
 
 
 from django.contrib.auth import login, authenticate
-from .forms import RegisterForm
+from .forms import CreateCompanyForm, RegisterForm, ResumeForm, SearchJobsForm
 
 def register(request):
     if request.method == 'GET':
@@ -199,16 +200,20 @@ def job_post_creation(request):
 
 
 @login_required
-def create_resume(request):
+def create_resume(request, res_id=None):
     if request.method == 'POST':
-        # request.FILES bc files upload option in form
-        form = ResumeForm(request.POST, request.FILES)
+        if res_id:
+            res = Resume.objects.get(pk=res_id)
+            form = ResumeForm(request.POST, request.FILES, instance=res)
+        else:
+            # request.FILES bc files upload option in form
+            form = ResumeForm(request.POST, request.FILES)
+
         if form.is_valid():
             obj = form.save(commit=False)
 
             # setting 1:1 attribute
             obj.user = request.user
-            request.user.company = form.company
 
             obj.save()
 
@@ -217,14 +222,27 @@ def create_resume(request):
         else:
             messages.error(request, 'Error processing your request')
             context = {'form': form}
-            return render(request, 'create-resume.html', context)
+            if request.user.role == "Employer":
+                return render(request, 'create-resume-employer.html', context)
+            else:
+                return render(request, 'create-resume.html', context)
 
     if request.method == 'GET':
-        form = ResumeForm()
+        if res_id:
+            res = Resume.objects.get(pk=res_id)
+            form = ResumeForm(instance=res)
+        else:
+            form = ResumeForm()
         context = {'form': form}
-        return render(request, 'create-resume.html', context)
+        if request.user.role == "Employer":
+            return render(request, 'create-resume-employer.html', context)
+        else:
+            return render(request, 'create-resume.html', context)
 
-    return render(request, 'create-resume.html', {})
+    if request.user.role == "Employer":
+        return render(request, 'create-resume-employer.html', {})
+    else:
+        return render(request, 'create-resume.html', {})
 
 
 def delete_experience(request, pk):
@@ -249,3 +267,161 @@ def delete_education(request, pk):
         return redirect('resume_detail', slug=slug)
 
     return render(request, 'resume_detail.html', {'edu': edu})
+
+
+from django.http import FileResponse
+
+def download(request, id, attrib_name):
+    obj = Resume.objects.get(pk=id)
+    if attrib_name == 'cover_letter':
+        filename = obj.cover_letter.path
+    elif attrib_name == 'cv':
+        filename = obj.cv.path
+    response = FileResponse(open(filename, 'rb'))
+    return response 
+
+
+@login_required
+def company_creation(request, comp_id=None):
+    if request.method == 'POST':
+        if comp_id:
+            comp = Company.objects.get(pk=comp_id)
+            form = CreateCompanyForm(request.POST, request.FILES, instance=comp)
+        else:
+            form = CreateCompanyForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            obj = form.save()
+            obj.save()
+            messages.success(request, 'Company profile updated successfully.')
+
+            return redirect('profile')
+
+        else:
+            messages.error(request, 'Error processing your request')
+            context = {'form': form}
+            return render(request, 'company_creation.html', context)    
+
+    if request.method == 'GET':
+        if comp_id:
+            comp = Company.objects.get(pk=comp_id)
+            form = CreateCompanyForm(instance=comp)
+        else:
+            form = CreateCompanyForm()
+        context = {'form' : form}
+        return render(request, 'company_creation.html', context)
+
+    return render(request, 'company_creation.html', {})
+
+
+
+# home page; primative search
+@login_required
+def home(request):
+    form = SearchJobsForm()
+
+    job_list = Job.objects.all()
+
+    context = {}
+    context['form'] = form
+    context['jobs'] = job_list
+
+    if request.method == 'POST':
+        form = SearchJobsForm(request.POST)
+        if form.is_valid():
+            search = form.cleaned_data.get('title')
+            jobs = Job.objects.filter(title__icontains=search)
+
+            context['jobs'] = jobs
+            context['title'] = search
+
+            # only sending jobs that fit the search
+            return render(request, 'home.html', context)
+    
+        else:
+            messages.error(request, 'Error processing your request')
+            context['form'] = form
+            return render(request, 'home.html', context)
+    
+    return render(request, 'home.html', context)
+
+# home page; smart search
+@login_required
+def home(request):
+    job_search_form = SearchJobsForm()
+
+    job_list = Job.objects.all()
+
+    context = {}
+    context['form'] = job_search_form
+    context['jobs'] = job_list
+
+    if request.method == 'POST':
+        job_search_form = SearchJobsForm(request.POST)
+        if form.is_valid():
+            search = form.cleaned_data.get('title')
+            jobs = []
+            if len(search.split()) > 1:
+                search_list = search.split()
+                item_list = []
+                for item in search_list:
+                    a_list = Job.objects.filter(title__icontains=item)
+                    for x in a_list:
+                            item_list.append(x)
+                [jobs.append(x) for x in item_list if x not in jobs]
+
+            else:
+                jobs = Job.objects.filter(title__icontains=search)
+
+            context['jobs'] = jobs
+            context['title'] = search
+
+            # only sending jobs that fit the search
+            return render(request, 'home.html', context)
+    
+        else:
+            messages.error(request, 'Error processing your request')
+            context['form'] = job_search_form
+            return render(request, 'home.html', context)
+    
+    return render(request, 'home.html', context)
+
+
+def search(request):
+    job_search_form = SearchJobsForm()
+
+    job_list = Job.objects.all()
+
+    context = {}
+    context['job_search_form'] = job_search_form
+    context['jobs'] = job_list
+
+    if request.method == 'POST':
+        job_search_form = SearchJobsForm(request.POST)
+        if job_search_form.is_valid():
+            search = job_search_form.cleaned_data.get('title')
+            jobs = []
+            if len(search.split()) > 1:
+                search_list = search.split()
+                item_list = []
+                for item in search_list:
+                    a_list = Job.objects.filter(title__icontains=item)
+                    for x in a_list:
+                            item_list.append(x)
+                [jobs.append(x) for x in item_list if x not in jobs]
+
+            else:
+                jobs = Job.objects.filter(title__icontains=search)
+
+            context['jobs'] = jobs
+            context['title'] = search
+
+            # only sending jobs that fit the search
+            return render(request, 'home.html', context)
+    
+        else:
+            messages.error(request, 'Error processing your request')
+            context['job_search_form'] = job_search_form
+            return render(request, 'home.html', context)
+    
+    return None

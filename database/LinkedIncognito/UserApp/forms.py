@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
 
-from .models import Resume, Education, Experience, Account
+from .models import Job, Resume, Education, Experience, Account
 
 class RegisterForm(UserCreationForm):
 
@@ -390,3 +390,36 @@ class CreateJobForm(forms.ModelForm):
             'title', 'company', 'location', 'salary', 'type', 'experience', 'summary', 'description',
             'requirements', 'closing_date'
         ]
+
+
+class CreateCompanyForm(forms.ModelForm):
+    name = forms.CharField(
+                max_length=150,
+                required=True,
+                widget=forms.TextInput(attrs={'class':'form-control company', 'placeholder':'Company Name'})
+                )    
+    description = forms.CharField(
+                required=False,
+                widget=forms.Textarea(attrs={'class':'form-control jobs', 'placeholder':'Company Bio'})
+                )    
+    companyLogo = forms.ImageField(
+                    required=False,
+                    widget=forms.FileInput(attrs={'class':'form-control'}),
+                    )     
+
+    class Meta:
+        model=Company
+        fields = [
+            'name', 'description', 'companyLogo'
+        ]           
+
+class SearchJobsForm(forms.ModelForm):
+    # for filtering against job's title
+    title = forms.CharField(
+                        required=True,
+                        widget=forms.TextInput(attrs={'class':'form-control rounded search-box', 'placeholder':'Search'})
+    )
+
+    class Meta:
+        model = Job
+        fields = ['title']

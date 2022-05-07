@@ -54,10 +54,6 @@ Start Up:
 
 that port is already in use error: sudo fuser -k 8000/tcp
 
-cant figure out how to create Employer/applicant user instead of generic
-
-companyprofile admin
-
 create new app:
 	python manage.py startapp <appname>
 	add to INSTALLED_APPS in LIapp/settings.py
@@ -71,16 +67,8 @@ if you want a class (model) attribute to be optional:
 	in forms.py set required=False
 
 
-last updated not working(on resume)
 
-need edit resume/education/experience
-need add experience form
-no feedback when enter wrong password
-download button for coverletter and cv
-some kind of error with the skills entry on experience form
+col-lg-8 col-md-8
 
-try to print job.owner
-add back when job creation is up
-
-move image from resume to usera(acct)
-
+col-lg-4 col-md-4
+have to add up to 12, this is how you divide space

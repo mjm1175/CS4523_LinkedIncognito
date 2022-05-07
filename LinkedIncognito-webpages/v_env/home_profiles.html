@@ -1,4 +1,4 @@
-{% extends "layout1.html" %}
+{% extends "home_layout.html" %}
 {% load static %}
 
 {% block homemain %}
@@ -21,6 +21,7 @@
                 {% endif %}                
                 
                 <div>
+                    <!-- REMOVE THIS FOR PRESENTATION; NO REAL NAMES -->
                     <p>{{user.first_name}} {{user.last_name}}</p>
                     <span>@{{user.username}}</span>
                 </div>

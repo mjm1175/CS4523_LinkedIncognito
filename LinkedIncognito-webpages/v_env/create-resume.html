@@ -31,19 +31,6 @@
         {% endif %}
 
         <h3>General Information:</h3>
-        <div class="col-md-12">
-            <div class="form-group app-label">
-                <label class="text-muted">Profile Image:</label><br>
-                {{form.image}}
-            </div>
-            {% if form.image.errors %}
-                {% for error in form.image.errors %}
-                    <div class="alert alert-danger">
-                        <strong>{{ error|escape }}</strong>
-                    </div>
-                {% endfor %}
-            {% endif %}
-        </div>
 
     <h3>Address:</h3>
     <div class="col-md-6">
