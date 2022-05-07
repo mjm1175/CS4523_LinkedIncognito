@@ -1,118 +1,73 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends "layout1.html" %}
+{% load static %}
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE-edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LinkedIncognito</title>
-    <link rel="stylesheet" href="{% static 'app/css/jobPost_and_application.css' %}">
-    <script src="https://kit.fontawesome.com/98fd1b3455.js" crossorigin="anonymous"></script>
-</head>
-<body>
-    <nav>
-        <!--------------NAVIGATION BAR--------------->
-        <div class="nav-left">
-            <a href="home.html"> <img src="{% static 'app/images/Linkedin-Logo.png' %}" class="logo"></a>
-            <ul>
-                <li><img src="{% static 'app/images/notification.png' %}"></li>
-                <li> <a href="messenger.html"> <img src="{% static 'app/images/inbox.png' %}"></a> </li>
-                <li><a href="calendar.html"><img src="{% static 'app/images/calendar.png' %}"></a></li>
-            </ul>
+{% block head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="{% static 'app/js/app_script.js' %}"></script>
+{% endblock %}
+
+
+{% block body %}
+<div class="job-app">
+    <br>
+    <h1>Apply to {{ job.title }} at {{ job.company }}</h1>
+    <br>
+    <!--Disclaim that this is more of an interest form than a formal application?-->
+    <form accept-charset="UTF-8" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="form-group">
+        {% if user.resume %}
+          <div id="prof-resume">
+          <label for="prof-resume">Submit the resume from your profile? </label>
+          {{form.use_profile_resume}}
+          </div>
+        {% endif %}
+
+        <div id="upload-resume-direct">
+          <label for="upload-resume">Upload a resume (optional): </label>
+          {{form.resume}}            
         </div>
-        <div class="nav-right">
-            <!--------------SEARCH BAR--------------->
-            <div class="search-box">
-                <img src="{% static 'app/images/search.png' %}">
-                <input type="text" placeholder="Search Jobs">
-            </div>
-            <!--------------USER PROFILE--------------->
-            <div class="nav-user-icon online" onclick="settingsMenuToggle()">
-                <img src="{% static 'app/images/profile.jpg' %}">
-            </div>
-        </div>
-        <div class="settings-menu">
-
-            <div class="settings-menu-inner">
-
-                <div id="dark-btn">
-                    <span></span>
-                </div>
-
-                <div class="user-profile">
-                    <img src="{% static 'app/images/profile.jpg' %}">
-                    <div>
-                        <p>Company Name</p>
-                        <a href = "companyprofileAdmin.html">See your profile</a>
-                    </div>
-                </div>
-                <hr>
-                <div class="user-profile">
-                    <img src="{% static 'app/images/feedback.png' %}">
-                    <div>
-                        <p>Give Feedback</p>
-                        <a href = "#">Help us improve our website design!</a>
-                    </div>
-                </div>
-                <hr>
-                <div class="settings-links">
-                    <img src="{% static 'app/images/setting.png' %}" class="settings-icons">
-                    <a href="#"> Settings & Privacy <img src="{% static 'app/images/arrow.png' %}" width="10px"></a>
-                </div>
-                <div class="settings-links">
-                    <img src="{% static 'app/images/help.png' %}" class="settings-icons">
-                    <a href="#"> Help & Support <img src="{% static 'app/images/arrow.png' %}" width="10px"></a>
-                </div>
-                <div class="settings-links">
-                    <img src="{% static 'app/images/display.png' %}" class="settings-icons">
-                    <a href="#"> Display & Accessibility <img src="{% static 'app/images/arrow.png' %}" width="10px"></a>
-                </div>
-                <div class="settings-links">
-                    <img src="{% static 'app/images/logout.png' %}" class="settings-icons">
-                    <a href="#"> Logout <img src="{% static 'app/images/arrow.png' %}" width="10px"></a>
-                </div>
-
-            </div>
-        </div>
-    </nav>
-
-    <div class="job-app">
-        <br>
-        <h1>Apply Here!</h1>
-        <form accept-charset="UTF-8">
-          <label for="inputAddress">Address: </label>
-          <div class="form-group">
-            <input type="text" name="address" class="form-control" id="inputAddress" placeholder="1234 Main St">
-          </div>
-          <div class="form-row">
-            <label for="inputCity">City: </label>
-            <div class="form-group col-md-6">
-              <input type="text" name="city" class="form-control" id="inputCity">
-            </div>
-            <label for="inputZip">Zip: </label>
-            <div class="form-group col-md-2">
-              <input type="text" name="zip" class="form-control" id="inputZip">
-            </div>
-          </div>
-          <div class="form-group">
-            <label for="example-date-input" class="col-3 col-form-label">Start Date: </label>
-            <div class="col-10">
-              <input class="form-control" name="starting_date" type="date" value="2022-02-01" id="example-date-input">
-            </div>
-          </div>
-          <div class="form-group mt-3">
-            <label class="mr-4">Upload your Resume: </label>
-            <input type="file" name="file">
-          </div>
-          <div class="form-group mt-3">
-            <label class="mr-4">Upload your Cover Letter(if required): </label>
-            <input type="file" name="file">
-          </div>
-
-          <button type="submit" class="btn btn-primary">Submit</button>
-        </form>
       </div>
+      <br>
+      <div class="form-row">
 
+
+
+        <div class="form-group col-md-6">
+          {% if user.resume %}
+            <div id="prof-cover">
+              <label for="prof-cover">Submit the cover letter from your profile? </label>
+              {{form.use_profile_cover_letter}}              
+            </div>
+          {% endif %}
+
+          <div id="upload-cover-direct">
+            <label for="upload-cover">Upload a Cover Letter (optional): </label>
+            {{form.cover_letter}}
+          </div>
+        </div>
+
+
+
+
+        <br>
+        {% if job.type == 'Remote' %}
+          <label >This job is a Remote position : </label>
+        {% elif job.location %}
+          <label>This job is a {{job.type}} position in {{job.location}} : </label>
+        {% else %}
+          <label>This job is a {{job.type}} position : </label>
+        {% endif %}
+        <div class="form-group col-md-2">
+          <p>Please confirm that you are willing to apply to a job with this format/location</p>
+          {{form.location_type_ok}}
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+{% endblock %}
+
+{% block source %}
     <script src="{% static 'app/js/script.js' %}"></script>
-</body>
-</html>
+{% endblock %}
