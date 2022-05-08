@@ -100,7 +100,7 @@ def SaveFile(request):
 
 
 from django.contrib.auth import login, authenticate
-from .forms import ApplicationForm, CreateCompanyForm, RegisterForm, ResumeForm, SearchJobsForm
+from .forms import ApplicationForm, CreateCompanyForm, CreateJobForm, RegisterForm, ResumeForm, SearchJobsForm
 
 def register(request):
     if request.method == 'GET':
@@ -466,3 +466,186 @@ def apply(request, slug):
         return render(request, 'job_application.html', context)
 
     return render(request, 'job_application.html', context)
+
+@csrf_protect
+def public_profile(request, slug):
+    # search
+    job_search_form = SearchJobsForm()
+
+    context = {}
+    context['job_search_form'] = job_search_form
+
+    search_request = search(request)
+    if search_request is not None:
+        return search_request
+    # end search
+
+    obj = Account.objects.get(slug=slug)
+
+    try:
+        if obj.resume:
+            educations = Education.objects.filter(resume=obj.resume)
+            experiences = Experience.objects.filter(resume=obj.resume)
+
+            # essentially only true if theyre an employer and have this set up
+            if obj.resume.company is not None:
+                jobs = Job.objects.filter(company=obj.resume.company)
+                context['postings'] = jobs
+
+            context['educations'] = educations
+            context['experiences'] = experiences    
+    except Account.resume.RelatedObjectDoesNotExist:
+        pass
+
+
+    context['object'] = obj
+
+    return render(request, 'public_profile.html', context)
+
+
+def view_applications(request, slug):
+    # passing slug of the job posting
+    job = Job.objects.get(slug=slug)
+    apps = Application.objects.filter(job=job)
+
+    context = {}
+    context['job'] = job
+    context['apps'] = apps
+
+    return render(request, 'view_applications.html', context)
+
+
+
+def job_post_creation(request, job_id=None):
+    # search
+    job_search_form = SearchJobsForm()
+
+    context = {}
+    context['job_search_form'] = job_search_form
+
+    if request.method == 'GET':
+        if job_id:
+            job = Job.objects.get(pk=job_id)
+            form = CreateJobForm(instance=job)
+        else:
+            form = CreateJobForm()
+
+        context['form'] = form
+        return render(request, 'job_post_creation.html', context)
+
+    if request.method == 'POST':
+        if job_id:
+            job = Job.objects.get(pk=job_id)
+            form = CreateJobForm(request.POST, instance=job)
+        else:
+            form = CreateJobForm(request.POST)
+
+        search_request = search(request)
+
+        if form.is_valid():
+            obj = form.save(commit=False)
+            obj.owner = request.user
+            # might throw error
+    #			if request.user.resume: (check for this some better way)
+            obj.company = request.user.resume.company
+            obj.save()
+            messages.success(request, 'Job post created successfully.')
+
+            return redirect('job_post', slug=obj.slug)
+        elif search_request is not None:
+            return search_request
+        else:
+            messages.error(request, 'Error processing your request')
+            context['form'] = form
+            return render(request, 'job_post_creation.html', context)
+
+    return render(request, 'job_post_creation.html', context)
+
+def delete_job(request, pk):
+    job = Job.objects.get(pk=pk)  
+
+    if request.method == 'POST':        
+        job.delete()                   
+        messages.success(request, 'Job post deleted successfully')
+        return redirect('profile')            
+
+    return render(request, 'view_applications.html', {'job': job})
+
+def download_from_application(request, id, attrib_name):
+    obj = Application.objects.get(pk=id)
+    if attrib_name == 'cover_letter':
+        filename = obj.cover_letter.path
+    elif attrib_name == 'resume':
+        filename = obj.resume.path
+    response = FileResponse(open(filename, 'rb'))
+    return response 
+
+
+def apply(request, slug, app_id=None):
+    job = Job.objects.get(slug=slug)
+    context = {}
+    context['job'] = job
+
+    if request.method == 'POST':
+        if app_id:
+            app = Application.objects.get(pk=app_id)
+            form = ApplicationForm(request.POST, request.FILES, instance=app)
+        else:
+            form = ApplicationForm(request.POST, request.FILES)
+
+        if form.is_valid():
+            obj = form.save(commit=False)
+
+            # setting foreign keys
+            obj.applicant = request.user
+            obj.job = job
+
+            # setting upload fields
+            # could also check for if upload_resume is None
+            # if this works we can change upload_resume to be resume
+            if form.cleaned_data.get('use_profile_resume') == 'Yes':
+                obj.resume = request.user.resume.cv
+            
+            if form.cleaned_data.get('use_profile_cover_letter') == 'Yes':
+                obj.cover_letter = request.user.resume.cover_letter
+
+            obj.save()
+            messages.success(request, 'Application submitted successfully.')
+
+            return redirect('home_page')
+
+        else:
+            messages.error(request, 'Error processing your request')
+            context['form'] = form
+            return render(request, 'job_application.html', context)    
+
+    if request.method == 'GET':
+        if app_id:
+            app = Application.objects.get(pk=app_id)
+            form = ApplicationForm(instance=app)
+        else:
+            form = ApplicationForm()
+
+        context['form'] = form
+        return render(request, 'job_application.html', context)
+
+    return render(request, 'job_application.html', context)
+
+def delete_application(request, pk):
+    app = Application.objects.get(pk=pk)  
+
+    if request.method == 'POST':        
+        app.delete()                   
+        messages.success(request, 'Application deleted successfully')
+        return redirect('profile')            
+
+    return render(request, 'my_applications.html', {'app': app})
+
+
+def my_applications(request):
+    apps = Application.objects.filter(applicant=request.user)
+
+    context = {}
+    context['apps'] = apps
+
+    return render(request, 'my_applications.html', context)    
