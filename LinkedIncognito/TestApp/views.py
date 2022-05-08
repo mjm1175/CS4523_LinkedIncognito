@@ -69,3 +69,97 @@ def SaveFile(request):
     file = request.FILES['file']
     file_name = default_storage.save(file.name, file)
     return JsonResponse(file_name, safe=False)
+
+def sendEmail(emailAddr, emailDetails, subject):
+    from_email = settings.EMAIL_HOST_USER
+    to_email = emailAddr
+    text_content = """
+             {}
+             {}
+             {}
+             {}          
+             Best,
+                  The LinkedIncognito Team
+                                                     
+                     """.format(emailDetails['title'], emailDetails['subtitle'], emailDetails['message'], emailDetails['link'])
+    
+    html_c = get_template('email.html')
+    d = {'email': email}
+    html_content = html_c.render(d)
+
+    msg = EmailMultiAlternatives(subject, text_content, from_email, to_email)
+    msg.attach_alternative(html_content, 'text/html')
+    msg.send()
+
+
+def sendInvitation(invitee, employer, response):
+    content = {}
+    content['title'] = 'Hey There!'
+    content['subtitle'] = 'You have been invited to an interview with ' + employer + '.'
+    content['message'] = 'Here is the link to join your meeting ' + \
+        response['join_url'] + ' at ' + response['start_time'] + '. If this time does not work for you, click the button below to notify your employer.'
+    content['link'] = 'http://159.203.182.153:8000/sendRejection'
+
+    subject = 'Interview Scheduled'
+    sendEmail(invitee, content, "Interview Invitation")
+    
+
+def sendConfirmation(receiver, response):
+    content = {}
+    content['title'] = 'Hey There!'
+    content['subtitle'] = 'You have successfully scheduled your interview.'
+    content['message'] = 'Here is the link to start your meeting ' + \
+        response['start_url'] + ' at ' + response['start_time']
+    content['link'] = 'http://159.203.182.153:8000/'
+
+    sendEmail(receiver, content, "Interview Scheduled")
+
+@csrf_protect
+def sendRejection(request):
+    if request.method == "POST":
+
+        receiver = Accounts.objects.get(username=request.POST["employer"]) 
+
+        content = {}
+        content['title'] = 'Hey There!'
+        content['subtitle'] = request.user.username + ' has rejected your interview invitation.'
+        content['message'] = 'Here is the link to schedule a new meeting:'
+        content['link'] = 'http://159.203.182.153:8000/meetingCreation'
+
+        sendEmail(receiver.email, content, "Interview Rejected")
+
+@csrf_protect
+def createMeeting(request):
+    if request.method == "POST":
+
+        meetingdetails = {"topic": request.POST["topic"],
+                          "type": 2,
+
+                          "start_time": request.POST["time"],
+                          "duration": request.POST["duration"],
+                          "timezone": "Eastern Time",
+                          "agenda": "LinkedIncognito Interview",
+                          "settings": {"host_video": "true",
+                                       "participant_video": "False",
+                                       "join_before_host": "False",
+                                       "mute_upon_entry": "False",
+                                       "watermark": "true",
+                                       "audio": "voip",
+                                       "meeting_authentication": "False"
+                                       }
+                          }
+        headers = {'authorization': 'Bearer %s' % generateToken(),
+                   'content-type': 'application/json'}
+
+        r = requests.post(
+            f'https://api.zoom.us/v2/users/me/meetings', headers=headers, data=json.dumps(meetingdetails))
+
+
+        invitee = Accounts.objects.get(username=request.POST["invitee"])     
+
+        sendInvitation(invitee.email, request.user.first_name, r.json())
+        sendConfirmation(request.user.email,r.json())
+
+        return render(request, "meetingCreation.html", r.json())
+    else:
+        return render(request, "meetingCreation.html")
