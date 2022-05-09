@@ -1,3 +1,4 @@
+from email.policy import default
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
@@ -216,13 +217,15 @@ class ResumeForm(forms.ModelForm):
 
     company = forms.ModelChoiceField(queryset=Company.objects.all())
 
+
     class Meta:
         model = Resume
         fields = [
             'image', 'city', 'state', 'cover_letter', 'cv', 'company'
         ]
 
-
+class AnonForm(forms.Form):
+    confirm_anon = forms.BooleanField(required=True)
 
 
 class EducationForm(forms.ModelForm):
@@ -311,20 +314,31 @@ class ExperienceForm(forms.ModelForm):
 
 class CreateJobForm(forms.ModelForm):
     # these values are what will actually be stored in the database
-    FULL_TIME = 'FT'
-    PART_TIME = 'PT'
-    REMOTE = 'RT'
-    TIER1 = 't1'
-    TIER2 = 't2'
-    TIER3 = 't3'
-    TIER4 = 't4'
-    TIER5 = 't5'
+    FULL_TIME = 'Full Time'
+    PART_TIME = 'Part Time'
+    REMOTE = 'Remote'
+    NOT_PROVIDED = 'N/A'
+    TIER1 = 'Less than 2yrs'
+    TIER2 = '2yrs - 5yrs'
+    TIER3 = '5yrs - 10yrs'
+    TIER4 = '10yrs - 15yrs'
+    TIER5 = 'More than 15yrs'
+
+    COMPUTER_SCIENCE = 'Computer Science'
+    DATABASE_MANAGEMENT = 'Database Management'
+    DATA_SCIENCE = 'Data Science'
+    INFORMATION_SYSTEMS = 'Information Systems'
+    NETWORK_SECURITY = 'Network Security'
+    SOFTWARE_ENGINEERING = 'Software Engineering'
+    WEB_DEVELOPMENT = 'Web Development'
+
     
     # Pairing backend values with front end displays
     TYPE_CHOICES = [
         (FULL_TIME, 'Full Time'),
         (PART_TIME, 'Part Time'),
         (REMOTE, 'Remote'),
+        (NOT_PROVIDED, 'N/A')
     ]
     EXP_CHOICES = [
         (TIER1, 'Less than 2yrs'),
@@ -332,30 +346,165 @@ class CreateJobForm(forms.ModelForm):
         (TIER3, '5yrs - 10yrs'),
         (TIER4, '10yrs - 15yrs'),
         (TIER5, 'More than 15yrs'),
+        (NOT_PROVIDED, 'N/A')
+    ]
+    CAT_CHOICES = [
+        (COMPUTER_SCIENCE, 'Computer Science'),
+        (DATABASE_MANAGEMENT, 'Database Management'),
+        (DATA_SCIENCE, 'Data Science'),
+        (INFORMATION_SYSTEMS, 'Information Systems'),
+        (NETWORK_SECURITY, 'Network Security'),
+        (SOFTWARE_ENGINEERING, 'Software Engineering'),
+        (WEB_DEVELOPMENT, 'Web Development'),
+        (NOT_PROVIDED, 'N/A'),
+    ]
+
+    AK	= 'Alaska'
+    AL	= 'Alabama'
+    AR	= 'Arkansas'
+    AZ	= 'Arizona'
+    CA	= 'California'
+    CO	= 'Colorado'
+    CT	= 'Connecticut'
+    DC	= 'District of Columbia'
+    DE	= 'Delaware'
+    FL	= 'Florida'
+    GA	= 'Georgia'
+    HI	= 'Hawaii'
+    IA	= 'Iowa'
+    ID	= 'Idaho'
+    IL	= 'Illinois'
+    IN	= 'Indiana'
+    KS	= 'Kansas'
+    KY	= 'Kentucky'
+    LA	= 'Louisiana'
+    MA	= 'Massachusetts'
+    MD	= 'Maryland'
+    ME	= 'Maine'
+    MI	= 'Michigan'
+    MN	= 'Minnesota'
+    MO	= 'Missouri'
+    MS	= 'Mississippi'
+    MT	= 'Montana'
+    NC	= 'North Carolina'
+    ND	= 'North Dakota'
+    NE	= 'Nebraska'
+    NH	= 'New Hampshire'
+    NJ	= 'New Jersey'
+    NM	= 'New Mexico'
+    NV	= 'Nevada'
+    NY	= 'New York'
+    OH	= 'Ohio'
+    OK	= 'Oklahoma'
+    OR	= 'Oregon'
+    PA	= 'Pennsylvania'
+    PR	= 'Puerto Rico'
+    RI	= 'Rhode Island'
+    SC	= 'South Carolina'
+    SD	= 'South Dakota'
+    TN	= 'Tennessee'
+    TX	= 'Texas'
+    UT	= 'Utah'
+    VA	= 'Virginia'
+    VT	= 'Vermont'
+    WA	= 'Washington'
+    WI	= 'Wisconsin'
+    WV	= 'West Virginia'
+    WY = 'Wyoming'
+
+    STATE_CHOICES = [
+        (AK,'Alaska'),
+        (AL,'Alabama'),
+        (AR,'Arkansas'),
+        (AZ,'Arizona'),
+        (CA,'California'),
+        (CO,'Colorado'),
+        (CT,'Connecticut'),
+        (DC,'District of Columbia'),
+        (DE,'Delaware'),
+        (FL,'Florida'),
+        (GA,'Georgia'),
+        (HI,'Hawaii'),
+        (IA,'Iowa'),
+        (ID,'Idaho'),
+        (IL,'Illinois'),
+        (IN,'Indiana'),
+        (KS,'Kansas'),
+        (KY,'Kentucky'),
+        (LA,'Louisiana'),
+        (MA,'Massachusetts'),
+        (MD,'Maryland'),
+        (ME,'Maine'),
+        (MI,'Michigan'),
+        (MN,'Minnesota'),
+        (MO,'Missouri'),
+        (MS,'Mississippi'),
+        (MT,'Montana'),
+        (NC,'North Carolina'),
+        (ND,'North Dakota'),
+        (NE,'Nebraska'),
+        (NH,'New Hampshire'),
+        (NJ,'New Jersey'),
+        (NM,'New Mexico'),
+        (NV,'Nevada'),
+        (NY,'New York'),
+        (OH,'Ohio'),
+        (OK,'Oklahoma'),
+        (OR,'Oregon'),
+        (PA,'Pennsylvania'),
+        (PR,'Puerto Rico'),
+        (RI,'Rhode Island'),
+        (SC,'South Carolina'),
+        (SD,'South Dakota'),
+        (TN,'Tennessee'),
+        (TX,'Texas'),
+        (UT,'Utah'),
+        (VA,'Virginia'),
+        (VT,'Vermont'),
+        (WA,'Washington'),
+        (WI,'Wisconsin'),
+        (WV,'West Virginia'),
+        (WY,'Wyoming'),
+        (NOT_PROVIDED,'N/A')
     ]
 
     title = forms.CharField(
                 max_length=150,
                 required=True,
-                widget=forms.TextInput(attrs={'class':'form-control jobs', 'placeholder':'Job Title'})
+                widget=forms.TextInput(attrs={'class':'form-control jobs', 'placeholder':'Job Title*', 'name':'job-title'})
                 )
 
-    location = forms.CharField(
-                max_length=200,
-                required=False,
-                widget=forms.TextInput(attrs={'class':'form-control jobs', 'placeholder':'Location'})
-                )
+    # new
+    category = forms.ChoiceField(
+                    required=False,
+                    choices=CAT_CHOICES,
+                    widget=forms.Select(attrs={'class':'nice-select rounded', 'name':'job-category'})
+                    )
+
+    # new
+    state = forms.ChoiceField(
+                    required=False,
+                    choices=STATE_CHOICES,
+                    widget=forms.Select(attrs={'class':'nice-select rounded', 'name':'job-state'})
+                    )
 
     salary = forms.CharField(
                 max_length=100,
                 required=False,
                 widget=forms.TextInput(attrs={'class':'form-control jobs', 'placeholder':'Salary'})
                 )
+    
+    # new
+    city = forms.CharField(
+                max_length=200,
+                required=False,
+                widget=forms.TextInput(attrs={'class':'form-control jobs', 'placeholder':'City'})
+                )
 
     type = forms.ChoiceField(
-                    required=False,
+                    required=True,
                     choices=TYPE_CHOICES,
-                    widget=forms.Select(attrs={'class':'nice-select rounded'})
+                    widget=forms.Select(attrs={'class':'nice-select rounded', 'name':'job-type'})
                     ) 
 
     experience = forms.ChoiceField(
@@ -366,29 +515,24 @@ class CreateJobForm(forms.ModelForm):
 
     summary = forms.CharField(
                 required=True,
-                widget=forms.Textarea(attrs={'class':'form-control jobs', 'placeholder':'Summary'})
+                widget=forms.Textarea(attrs={'class':'form-control jobs', 'placeholder':'Summary*'})
                 )
 
     description = forms.CharField(
                 required=True,
-                widget=forms.Textarea(attrs={'class':'form-control jobs', 'placeholder':'Description'})
-                )
-
-    requirements = forms.CharField(
-                required=False,
-                widget=forms.TextInput(attrs={'class':'form-control jobs', 'placeholder':'Requirements'})
+                widget=forms.Textarea(attrs={'class':'form-control jobs', 'placeholder':'Description*'})
                 )
     
-    closing_date = forms.DateField(
-                    required=False,
-                    widget=DateInput(attrs={'class':'form-control', 'placeholder':'Stop Accepting Applications After: '})
-                    )
+    # new (tell them to separate by commas)
+    skills = SimpleArrayField(forms.CharField(max_length=100, required=False,
+                widget=forms.TextInput(attrs={'class':'form-control jobs', 'placeholder':'Skills', 'name':'job-skills'})
+                ))
     
     class Meta:
         model=Job
         fields = [
-            'title', 'company', 'location', 'salary', 'type', 'experience', 'summary', 'description',
-            'requirements', 'closing_date'
+            'title', 'location', 'salary', 'type', 'experience', 'summary', 'description',
+            'requirements', 'closing_date', 'skills', 'city', 'state', 'category'
         ]
 
 
@@ -413,16 +557,6 @@ class CreateCompanyForm(forms.ModelForm):
             'name', 'description', 'companyLogo'
         ]           
 
-class SearchJobsForm(forms.ModelForm):
-    # for filtering against job's title
-    title = forms.CharField(
-                        required=True,
-                        widget=forms.TextInput(attrs={'class':'form-control rounded search-box', 'placeholder':'Search'})
-    )
-
-    class Meta:
-        model = Job
-        fields = ['title']
 
 class ApplicationForm(forms.ModelForm):
     YES = 'Yes'
@@ -435,10 +569,12 @@ class ApplicationForm(forms.ModelForm):
 
     # won't show if the user doesn't have a resume
     use_profile_resume = forms.ChoiceField(
+                    required=False
                     initial=NO,
                     choices=USE_RESUME_CHOICES,
                     widget=forms.RadioSelect(attrs={'class':'form-control', 'id':'prof-resume'}))
     use_profile_cover_letter = forms.ChoiceField(
+                    required=False
                     initial=NO,
                     choices=USE_RESUME_CHOICES,
                     widget=forms.RadioSelect(attrs={'class':'form-control', 'id':'prof-cover'}))
@@ -460,4 +596,69 @@ class ApplicationForm(forms.ModelForm):
         fields = [
             'use_profile_resume', 'use_profile_cover_letter', 'resume',
             'cover_letter', 'location_type_ok'
-        ]    
+        ]   
+
+
+class VerifyEmailForm(forms.Form):
+    code = forms.CharField(
+                max_length=150,
+                required=True,
+                widget=forms.TextInput(attrs={'class':'form-control company', 'placeholder':'Enter the verification code we sent to your email'})
+                )     
+
+
+class SearchJobsForm(forms.Form):
+    NOT_PROVIDED = 'N/A'
+
+    title = forms.CharField(
+                    required=False,
+                    widget=forms.TextInput(attrs={'class':'form-control rounded search-box', 'placeholder':'Search'})
+                    )
+
+    category = forms.ChoiceField(
+                    initial=NOT_PROVIDED,
+                    required=False,
+                    choices=CreateJobForm.CAT_CHOICES,
+                    widget=forms.Select(attrs={'class':'nice-select rounded', 'name':'job-category'})
+                    )
+
+    location = forms.ChoiceField(
+                    initial=NOT_PROVIDED,
+                    required=False,
+                    choices=CreateJobForm.STATE_CHOICES,
+                    widget=forms.Select(attrs={'class':'nice-select rounded', 'name':'job-location'})
+                    )                  
+
+
+class FilterJobsForm(forms.ModelForm):
+    NOT_PROVIDED = 'N/A'
+
+    category = forms.ChoiceField(
+                    default=CreateJobForm.CAT_CHOICES[NOT_PROVIDED],
+                    required=False,
+                    choices=CreateJobForm.CAT_CHOICES,
+                    widget=forms.Select(attrs={'class':'nice-select rounded', 'name':'job-category'})
+                    )
+    location = forms.ChoiceField(
+                    default=CreateJobForm.STATE_CHOICES[NOT_PROVIDED],
+                    required=False,
+                    choices=CreateJobForm.STATE_CHOICES,
+                    widget=forms.Select(attrs={'class':'nice-select rounded', 'name':'job-location'})
+                    )
+    class Meta:
+        model = Job
+        fields = ['category', 'location']
+
+
+class FilterApplicantsForm(forms.Form):
+    NOT_PROVIDED = 'N/A'
+
+    # QUALIFICATION MATCH; tell them to separate w commas
+    qualifications = SimpleArrayField(forms.CharField(max_length=100, required=False))
+
+    state = forms.ChoiceField(
+                    required=False,
+                    initial=NOT_PROVIDED,
+                    choices=ResumeForm.STATE_CHOICES,
+                    widget=forms.Select(attrs={'class':'nice-select rounded', 'name':'app-location'})
+                    )

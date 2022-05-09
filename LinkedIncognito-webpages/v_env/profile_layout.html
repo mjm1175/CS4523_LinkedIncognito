@@ -121,7 +121,7 @@ Profile
                     <p class="post-text">{{post.summary}}</p>
                     <div class="job-preview">
                         <div class="job-preview-elem">
-                            <p>{{post.location}}</p>
+                            <p>{% if post.city %}{{post.city}}, {% endif %}{{post.state}}</p>
                         </div>
                         <div class="job-preview-elem">
                             <P>{{post.type}}</P>
@@ -142,6 +142,7 @@ Profile
                 {% endfor %}
             {% endif %}
         </div>
+    </div>
 </div>
 
 {% endblock %}

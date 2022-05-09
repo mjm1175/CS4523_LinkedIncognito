@@ -65,10 +65,3 @@ after any edits to models.py:
 if you want a class (model) attribute to be optional:
 	in models.py set null=True, blank=True
 	in forms.py set required=False
-
-
-
-col-lg-8 col-md-8
-
-col-lg-4 col-md-4
-have to add up to 12, this is how you divide space

@@ -15,8 +15,24 @@
     <!--Disclaim that this is more of an interest form than a formal application?-->
     <form accept-charset="UTF-8" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
+
+      {% if form.errors %}
+          {% for field in form %}
+              {% for error in field.errors %}
+                  <div class="alert alert-danger">
+                      <strong>{{ error|escape }}</strong>
+                  </div>
+              {% endfor %}
+          {% endfor %}
+          {% for error in form.non_field_errors %}
+              <div class="alert alert-danger">
+                  <strong>{{ error|escape }}</strong>
+              </div>           
+          {% endfor %} 
+      {% endif %}  
+
       <div class="form-group">
-        {% if user.resume %}
+        {% if user.resume and user.resume.cv %}
           <div id="prof-resume">
           <label for="prof-resume">Submit the resume from your profile? </label>
           {{form.use_profile_resume}}
@@ -34,7 +50,7 @@
 
 
         <div class="form-group col-md-6">
-          {% if user.resume %}
+          {% if user.resume and user.resume.cover_letter %}
             <div id="prof-cover">
               <label for="prof-cover">Submit the cover letter from your profile? </label>
               {{form.use_profile_cover_letter}}              
@@ -53,8 +69,10 @@
         <br>
         {% if job.type == 'Remote' %}
           <label >This job is a Remote position : </label>
-        {% elif job.location %}
-          <label>This job is a {{job.type}} position in {{job.location}} : </label>
+        {% elif job.city and job.state %}
+          <label>This job is a {{job.type}} position in {{job.city}}, {{job.state}} : </label>
+        {% elif job.state %}
+          <label>This job is a {{job.type}} position in {{job.state}} : </label>          
         {% else %}
           <label>This job is a {{job.type}} position : </label>
         {% endif %}

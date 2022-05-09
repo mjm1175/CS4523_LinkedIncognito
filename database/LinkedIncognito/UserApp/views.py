@@ -1,3 +1,4 @@
+from urllib import request
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from pytz import timezone
@@ -10,87 +11,6 @@ from UserApp.serializers import ApplicantSerializer, EmployerSerializer, JobPost
 from django.core.files.storage import default_storage
 # Create your views here.
 
-###################################### Applicant API #######################################
-@csrf_exempt
-def applicantApi(request, id=0):
-    if request.method=='GET':
-        applicants = Applicants.objects.all()
-        applicants_serializer = ApplicantSerializer(applicants, many=True)
-        return JsonResponse(applicants_serializer.data, safe=False)
-    elif request.method=='POST':
-        applicant_data = JSONParser().parse(request)
-        applicants_serializer = ApplicantSerializer(data=applicant_data)
-        if applicants_serializer.is_valid():
-            applicants_serializer.save()
-            return JsonResponse("Added Successfully", safe=False)
-        return JsonResponse("Failed to Add", safe=False)
-    elif request.method=='PUT':
-        applicant_data = JSONParser().parse(request)
-        applicant = Applicants.objects.get(Username=applicant_data['Username'])
-        applicants_serializer = ApplicantSerializer(applicant, data=applicant_data)
-        if applicants_serializer.is_valid():
-            applicants_serializer.save()
-            return JsonResponse("Updated Successfully", safe=False)
-        return JsonResponse("Failed to Update", safe=False)
-    elif request.method=='DELETE':
-        applicant = Applicants.objects.get(Username=id)
-        applicant.delete()
-        return JsonResponse("Deleted Successfully", safe=False)
-
-###################################### Employer API #######################################
-@csrf_exempt
-def employerApi(request, id=0):
-    if request.method=='GET':
-        employers = Employers.objects.all()
-        employers_serializer = EmployerSerializer(employers, many=True)
-        return JsonResponse(employers_serializer.data, safe=False)
-    elif request.method=='POST':
-        employer_data = JSONParser().parse(request)
-        employers_serializer = EmployerSerializer(data=employer_data)
-        if employers_serializer.is_valid():
-            employers_serializer.save()
-            return JsonResponse("Added Successfully", safe=False)
-        return JsonResponse("Failed to Add", safe=False)
-    elif request.method=='PUT':
-        employer_data = JSONParser().parse(request)
-        employer = Employers.objects.get(Username=employer_data['Username'])
-        employers_serializer = EmployerSerializer(employer, data=employer_data)
-        if employees_serializer.is_valid():
-            employees_serializer.save()
-            return JsonResponse("Updated Successfully", safe=False)
-        return JsonResponse("Failed to Update", safe=False)
-    elif request.method=='DELETE':
-        employer = Employer.objects.get(Username=id)
-        employer.delete()
-        return JsonResponse("Deleted Successfully", safe=False)
-
-###################################### JobPosting API #######################################
-@csrf_exempt
-def jobPostingApi(request, id=0):
-    if request.method=='GET':
-        jobs = JobPosting.objects.all()
-        jobs_serializer = JobPostingSerializer(jobs, many=True)
-        return JsonResponse(jobs_serializer.data, safe=False)
-    elif request.method=='POST':
-        job_data = JSONParser().parse(request)
-        jobs_serializer = JobPostingSerializer(data=job_data)
-        if jobs_serializer.is_valid():
-            jobs_serializer.save()
-            return JsonResponse("Added Successfully", safe=False)
-        return JsonResponse("Failed to Add", safe=False)
-    elif request.method=='PUT':
-        job_data = JSONParser().parse(request)
-        job = JobPosting.objects.get(Title=job_data['Title'])
-        jobs_serializer = JobPostingSerializer(job, data=job_data)
-        if jobs_serializer.is_valid():
-            jobs_serializer.save()
-            return JsonResponse("Updated Successfully", safe=False)
-        return JsonResponse("Failed to Update", safe=False)
-    elif request.method=='DELETE':
-        job = JobPosting.objects.get(Title=id)
-        job.delete()
-        return JsonResponse("Deleted Successfully", safe=False)
-
 
 @csrf_exempt
 def SaveFile(request):
@@ -100,7 +20,7 @@ def SaveFile(request):
 
 
 from django.contrib.auth import login, authenticate
-from .forms import ApplicationForm, CreateCompanyForm, CreateJobForm, RegisterForm, ResumeForm, SearchJobsForm
+from .forms import AnonForm, ApplicationForm, CreateCompanyForm, CreateJobForm, FilterApplicantsForm, FilterJobsForm, RegisterForm, ResumeForm, SearchJobsForm
 
 def register(request):
     if request.method == 'GET':
@@ -198,53 +118,6 @@ def job_post_creation(request):
     return render(request, 'job_post_creation.html', {})
 
 
-
-@login_required
-def create_resume(request, res_id=None):
-    if request.method == 'POST':
-        if res_id:
-            res = Resume.objects.get(pk=res_id)
-            form = ResumeForm(request.POST, request.FILES, instance=res)
-        else:
-            # request.FILES bc files upload option in form
-            form = ResumeForm(request.POST, request.FILES)
-
-        if form.is_valid():
-            obj = form.save(commit=False)
-
-            # setting 1:1 attribute
-            obj.user = request.user
-
-            obj.save()
-
-            messages.success(request, 'Resume created successfully.')
-            return redirect('profile')
-        else:
-            messages.error(request, 'Error processing your request')
-            context = {'form': form}
-            if request.user.role == "Employer":
-                return render(request, 'create-resume-employer.html', context)
-            else:
-                return render(request, 'create-resume.html', context)
-
-    if request.method == 'GET':
-        if res_id:
-            res = Resume.objects.get(pk=res_id)
-            form = ResumeForm(instance=res)
-        else:
-            form = ResumeForm()
-        context = {'form': form}
-        if request.user.role == "Employer":
-            return render(request, 'create-resume-employer.html', context)
-        else:
-            return render(request, 'create-resume.html', context)
-
-    if request.user.role == "Employer":
-        return render(request, 'create-resume-employer.html', {})
-    else:
-        return render(request, 'create-resume.html', {})
-
-
 def delete_experience(request, pk):
     exp = Experience.objects.get(pk=pk)
 
@@ -312,79 +185,6 @@ def company_creation(request, comp_id=None):
         return render(request, 'company_creation.html', context)
 
     return render(request, 'company_creation.html', {})
-
-
-
-# home page; primative search
-@login_required
-def home(request):
-    form = SearchJobsForm()
-
-    job_list = Job.objects.all()
-
-    context = {}
-    context['form'] = form
-    context['jobs'] = job_list
-
-    if request.method == 'POST':
-        form = SearchJobsForm(request.POST)
-        if form.is_valid():
-            search = form.cleaned_data.get('title')
-            jobs = Job.objects.filter(title__icontains=search)
-
-            context['jobs'] = jobs
-            context['title'] = search
-
-            # only sending jobs that fit the search
-            return render(request, 'home.html', context)
-    
-        else:
-            messages.error(request, 'Error processing your request')
-            context['form'] = form
-            return render(request, 'home.html', context)
-    
-    return render(request, 'home.html', context)
-
-# home page; smart search
-@login_required
-def home(request):
-    job_search_form = SearchJobsForm()
-
-    job_list = Job.objects.all()
-
-    context = {}
-    context['form'] = job_search_form
-    context['jobs'] = job_list
-
-    if request.method == 'POST':
-        job_search_form = SearchJobsForm(request.POST)
-        if form.is_valid():
-            search = form.cleaned_data.get('title')
-            jobs = []
-            if len(search.split()) > 1:
-                search_list = search.split()
-                item_list = []
-                for item in search_list:
-                    a_list = Job.objects.filter(title__icontains=item)
-                    for x in a_list:
-                            item_list.append(x)
-                [jobs.append(x) for x in item_list if x not in jobs]
-
-            else:
-                jobs = Job.objects.filter(title__icontains=search)
-
-            context['jobs'] = jobs
-            context['title'] = search
-
-            # only sending jobs that fit the search
-            return render(request, 'home.html', context)
-    
-        else:
-            messages.error(request, 'Error processing your request')
-            context['form'] = job_search_form
-            return render(request, 'home.html', context)
-    
-    return render(request, 'home.html', context)
 
 
 def search(request):
@@ -649,3 +449,494 @@ def my_applications(request):
     context['apps'] = apps
 
     return render(request, 'my_applications.html', context)    
+
+
+# user views
+
+from .functions import *
+
+def register(request):
+    if request.method == 'GET':
+        form = RegisterForm()
+        context = {'form' : form}
+        return render(request, 'register.html', context)
+
+    if request.method == 'POST':
+        form = RegisterForm(request.POST)
+        if form.is_valid():
+            obj = form.save()
+
+            # send validation email
+            to_email = form.cleaned_data.get('email')
+            welcome = WelcomeEmail(obj.uniqueId)
+            e_mail = welcome.email()
+            print(obj.uniqueId)
+            send_email(e_mail, welcome.subject, [to_email])
+
+            user = form.cleaned_data.get('username')
+            # i think this part is the auto login
+            #email = form.cleaned_data.get('email')
+            #raw_password = form.cleaned_data.get('password1')
+            #account = authenticate(email=email, password=raw_password)
+            messages.success(request, 'Account was created for ' + user)
+            #login(request, account)
+            return redirect('verify_email')
+        else:
+            messages.error(request, 'Error processing your request')
+            context = {'form': form}
+            return render(request, 'register.html', context)
+
+    return render(request, 'register.html', {})
+
+def email_verify_code(request):
+    if request.method == 'GET':
+        form = VerifyEmailForm()
+        context = {'form' : form}
+        return render(request, 'verify_email.html', context)
+
+    if request.method == 'POST':
+        form = VerifyEmailForm(request.POST)
+        if form.is_valid():
+            code = form.cleaned_data.get('code')
+            try:
+                usr = Account.objects.get(uniqueId=code)
+                messages.success(request, 'Email verified, please log in')
+                usr.email_confirmed = True
+                usr.save()
+                return redirect('login')
+            except:
+                messages.error(request, 'Sorry, that code is incorrect.')
+                context = {'form': form}
+                return render(request, 'verify_email.html', context)
+        else:
+            messages.error(request, 'Error processing your request')
+            context = {'form': form}
+            return render(request, 'verify_email.html', context)
+
+    return render(request, 'verify_email.html', {})
+
+
+# New way to check if logged in (just on profile and home for now probably)
+###########################
+from django.contrib.auth.decorators import login_required, user_passes_test
+
+def is_email_verified(user):
+    return user.email_confirmed
+
+#@login_required
+#@user_passes_test(is_email_verified, 'verify_email', None)
+
+
+
+##########################################
+#NEW
+############################################
+
+# change public profile to generic except statement
+
+
+
+@login_required
+@user_passes_test(is_email_verified, 'verify_email', None)
+def profile(request):
+    # search
+    job_search_form = SearchJobsForm()
+
+    model = ProjectImplicit.objects.all()    
+
+    context = {}
+    context['job_search_form'] = job_search_form
+    context['model'] = model    
+
+    search_request = search(request)
+    if search_request is not None:
+        return search_request
+    else:
+        print("getting none")
+    # end search
+
+    usr = request.user
+
+    context['object'] = request.user
+
+    try:
+        if usr.resume:
+            educations = Education.objects.filter(resume=usr.resume)
+            experiences = Experience.objects.filter(resume=usr.resume)
+            context['educations'] = educations
+            context['experiences'] = experiences
+
+            if usr.resume.company:
+                jobs = Job.objects.filter(company=usr.resume.company)
+                context['postings'] = jobs             
+    except:
+        pass
+
+    return render(request, 'profile.html', context)
+
+@login_required
+@user_passes_test(is_email_verified, 'verify_email', None)
+def home_applicants(request):
+    # search
+    applicant_form = FilterApplicantsForm()
+    applicant_list = Account.objects.filter(role='Applicant')
+
+    context = {}
+    context['applicant_form'] = applicant_form
+    context['users'] = applicant_list
+
+    if request.method == 'POST':
+        applicant_form = FilterApplicantsForm(request.POST)
+        context['applicant_form'] = applicant_form
+
+        if applicant_form.is_valid():
+            qualifications = applicant_form.cleaned_data.get('qualifications')
+            location = applicant_form.cleaned_data.get('state')
+
+            print(qualifications)
+
+            quali_list = []
+            loco_list = []
+
+            if qualifications is not None and qualifications != []:
+                quali_list = applicant_list.filter(resume__experience__skills__contains=qualifications)
+                
+
+            if location is not None and location != '' and location != 'N/A':
+                # errors???
+                loco_list = applicant_list.filter(resume__state=location)
+            
+            app_ls = []
+            [app_ls.append(x) for x in quali_list if x not in app_ls]
+            [app_ls.append(x) for x in loco_list if x not in app_ls]
+
+
+            context['users'] = app_ls
+
+            return render(request, 'home_applicants.html', context)
+
+    return render(request, 'home_applicants.html', context)    
+
+
+
+
+
+
+    if request.method == 'POST':
+        job_search_form = SearchJobsForm(request.POST)
+        context['job_search_form'] = job_search_form
+
+        if job_search_form.is_valid():
+            # might need to check if not None
+            if filter and not job_filter_form.is_valid():
+                messages.error(request, 'Error processing your request')
+                context['job_search_form'] = job_search_form
+                context['job_filter_form'] = job_filter_form
+                return render(request, 'home.html', context)    
+
+            search = job_search_form.cleaned_data.get('title')
+            jobs = []
+            if len(search.split()) > 1:
+                search_list = search.split()
+                item_list = []
+                for item in search_list:
+                    a_list = Job.objects.filter(title__icontains=item)
+                    for x in a_list:
+                            item_list.append(x)
+                [jobs.append(x) for x in item_list if x not in jobs]
+
+            else:
+                jobs = Job.objects.filter(title__icontains=search)
+
+            if filter:
+                category = job_filter_form.cleaned_data.get('category')
+                location = job_filter_form.cleaned_data.get('location')
+
+                if category is not None and category != '' and category != 'N/A':
+                    print('category' + category)
+                    jobs = jobs.filter(category=category)
+                if location is not None and location != '' and location != 'N/A':
+                    print("location" + location)
+                    jobs = jobs.filter(location=location)
+
+            context['jobs'] = jobs
+            context['title'] = search
+
+            # only sending jobs that fit the search
+            return render(request, 'home.html', context)
+    
+    return None
+
+
+
+
+
+@login_required
+@user_passes_test(is_email_verified, 'verify_email', None)
+def home_employers(request):
+	# search
+	job_search_form = SearchJobsForm()
+
+	context = {}
+	context['job_search_form'] = job_search_form
+
+	search_request = search(request)
+	if search_request is not None:
+		return search_request
+	# end search
+
+	#	can change to filter for search
+	users_list = Account.objects.filter(role='Employer')
+	context['users'] = users_list
+	return render(request, 'home_employers.html', context)        
+
+
+@login_required
+@user_passes_test(is_email_verified, 'verify_email', None)
+def create_resume(request, res_id=None):
+    # search
+    job_search_form = SearchJobsForm()
+
+    context = {}
+    context['job_search_form'] = job_search_form
+
+    # applicants must verify their information
+    if request.user.role == 'Applicant':
+        need_conf = True
+    else:
+        need_conf = False
+
+    if request.method == 'POST':
+        search_request = search(request)
+
+        if res_id:
+            res = Resume.objects.get(pk=res_id)
+            form = ResumeForm(request.POST, request.FILES, instance=res)
+        else:
+            # request.FILES bc files upload option in form
+            form = ResumeForm(request.POST, request.FILES)
+
+        if need_conf:
+            conf_form = AnonForm(request.POST)
+
+        if form.is_valid():
+
+            if need_conf:
+                if not conf_form.is_valid():
+                    messages.error(request, 'Error processing your request')
+
+                    context['form'] = form
+                    context['conf_form'] = conf_form
+
+                    return render(request, 'create-resume.html', context)
+
+            obj = form.save(commit=False)
+                
+
+            # setting 1:1 attribute
+            obj.user = request.user
+            obj.last_updated = datetime.now
+
+            obj.save()
+
+            messages.success(request, 'Resume created successfully.')
+            return redirect('profile')
+        elif search_request is not None:
+            return search_request
+        else:
+            messages.error(request, 'Error processing your request')
+            context['form'] = form
+            
+            if need_conf:
+                context['conf_form'] = conf_form
+                return render(request, 'create-resume.html', context)
+            else:
+                return render(request, 'create-resume-employer.html', context)
+
+    if request.method == 'GET':
+        if res_id:
+            res = Resume.objects.get(pk=res_id)
+            form = ResumeForm(instance=res)
+        else:
+            form = ResumeForm()
+
+        context['form'] = form
+
+        if need_conf:
+            conf_form = AnonForm(request.POST)
+            context['conf_form'] = conf_form
+            return render(request, 'create-resume.html', context)
+        else:
+            return render(request, 'create-resume-employer.html', context)
+
+    if request.user.role == "Employer":
+        return render(request, 'create-resume-employer.html', context)
+    else:
+        return render(request, 'create-resume.html', context)
+
+from django.shortcuts import render
+
+def BootstrapFilterView(request):
+    qs = Job.object.all()
+    categories = CreateJobForm.CAT_CHOICES
+    locations = CreateJobForm.STATE_CHOICES
+
+    category_query = request.GET.get('category')
+    location_query = request.GET.get('location')
+    print(category_query)
+    print(location_query)
+
+    if category_query != '' and category_query is not None and category_query != "Choose...":
+        qs = qs.filter(category=category_query)
+    # the way you do multiple is just continuing to do it to itself
+    # i.e. qs = qs....
+    if location_query != '' and location_query is not None and location_query != "default value":    
+        qs=qs.filter(location=location_query)
+
+    #qs = filter(request)
+    context = {}
+    context['queryset'] = qs
+    context['categories'] = categories
+    context['locations'] = locations
+
+    return render(request, "bootstrap_form.html", context)
+
+def search(request):
+    job_search_form = SearchJobsForm()
+
+    job_list = Job.objects.all()
+
+    context = {}
+    context['job_search_form'] = job_search_form
+    context['jobs'] = job_list
+
+    if filter:
+        job_filter_form = FilterJobsForm()
+        context['job_filter_form'] = job_filter_form
+
+    if request.method == 'POST':
+        job_search_form = SearchJobsForm(request.POST)
+        context['job_search_form'] = job_search_form
+
+        if filter:
+            job_filter_form = FilterJobsForm(request.POST)
+            context['job_filter_form'] = job_filter_form
+
+
+        if job_search_form.is_valid():
+            # might need to check if not None
+            if filter and not job_filter_form.is_valid():
+                messages.error(request, 'Error processing your request')
+                context['job_search_form'] = job_search_form
+                context['job_filter_form'] = job_filter_form
+                return render(request, 'home.html', context)    
+
+            search = job_search_form.cleaned_data.get('title')
+            jobs = []
+            if len(search.split()) > 1:
+                search_list = search.split()
+                item_list = []
+                for item in search_list:
+                    a_list = Job.objects.filter(title__icontains=item)
+                    for x in a_list:
+                            item_list.append(x)
+                [jobs.append(x) for x in item_list if x not in jobs]
+
+            else:
+                jobs = Job.objects.filter(title__icontains=search)
+
+            if filter:
+                category = job_filter_form.cleaned_data.get('category')
+                location = job_filter_form.cleaned_data.get('location')
+
+                if category is not None and category != '' and category != 'N/A':
+                    print('category' + category)
+                    jobs = jobs.filter(category=category)
+                if location is not None and location != '' and location != 'N/A':
+                    print("location" + location)
+                    jobs = jobs.filter(location=location)
+
+            context['jobs'] = jobs
+            context['title'] = search
+
+            # only sending jobs that fit the search
+            return render(request, 'home.html', context)
+    
+    return None
+
+
+# no two forms
+def search(request):
+    job_search_form = SearchJobsForm()
+    model = ProjectImplicit.objects.all()
+
+    job_list = Job.objects.all()
+
+    context = {}
+    context['job_search_form'] = job_search_form
+    context['jobs'] = job_list
+
+    if request.method == 'POST':
+        job_search_form = SearchJobsForm(request.POST)
+        context['job_search_form'] = job_search_form
+
+        if job_search_form.is_valid():
+            # might need to check if not None  
+
+            search = job_search_form.cleaned_data.get('title')
+            jobs = []
+            if len(search.split()) > 1:
+                search_list = search.split()
+                item_list = []
+                for item in search_list:
+                    a_list = Job.objects.filter(title__icontains=item)
+                    for x in a_list:
+                            item_list.append(x)
+                [jobs.append(x) for x in item_list if x not in jobs]
+
+            else:
+                jobs = Job.objects.filter(title__icontains=search)
+
+            category = job_search_form.cleaned_data.get('category')
+            location = job_search_form.cleaned_data.get('location')
+
+            if category is not None and category != '' and category != 'N/A':
+                jobs = jobs.filter(category=category)
+            if location is not None and location != '' and location != 'N/A':
+                jobs = jobs.filter(state=location)
+
+            context['jobs'] = jobs
+            context['title'] = search
+
+            # only sending jobs that fit the search
+            return render(request, 'home.html', context)
+    
+    return None
+
+
+@login_required()
+def home(request):
+	if not request.user.email_confirmed:
+		return redirect('verify_email')
+	# search
+	job_search_form = SearchJobsForm()
+
+	context = {}
+	context['job_search_form'] = job_search_form
+
+	search_request = search(request)
+	if search_request is not None:
+		return search_request
+	# end search
+
+	job_list = Job.objects.all()
+	context['jobs'] = job_list
+
+	return render(request, 'home.html', context)
+
+
+# print out what those array fields look like
+# iterate through them like you do with title
+# maybe applicants dont need a title bc we didnt promise one
+# search bar can be only for jobs and other "searches" can just be filter
+
